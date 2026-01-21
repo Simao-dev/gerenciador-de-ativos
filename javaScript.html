@@ -1,0 +1,2145 @@
+<script>
+  //FUNÇÃO PARA ENCOLHIMENTO E EXPANSÃO DA BARRA LATERAL
+
+document.addEventListener('DOMContentLoaded', () => {
+    const btnAterar = document.getElementById('btnAterar');
+    const barraLateral = document.getElementById('barraLateral');
+
+    const ajustarBarraPorLargura = () => {
+        if (window.innerWidth <= 700) {
+            barraLateral.classList.add('mini-barra');
+        } else {
+            barraLateral.classList.remove('mini-barra');
+        }
+    };
+
+    ajustarBarraPorLargura();
+
+    window.addEventListener('resize', ajustarBarraPorLargura);
+
+    if (btnAterar) {
+        btnAterar.addEventListener('click', () => {
+            barraLateral.classList.toggle('mini-barra');
+        });
+    }
+});
+
+//NAVEGAÇÃO ENTRE MENUS
+
+const botoes = document.querySelectorAll(".menu-navegacao");
+const telasFuncoes = document.querySelectorAll(".form-area");
+
+botoes.forEach(botao => {
+  botao.addEventListener("click", () => {
+    
+    botoes.forEach(btn => btn.classList.remove("botao-ativo"));
+    telasFuncoes.forEach(conteudo => conteudo.classList.remove("conteudo-ativo"));
+
+    
+    botao.classList.add("botao-ativo");
+
+    
+    const alvo = botao.dataset.alvo;
+    const conteudoParaMostrar = document.getElementById(alvo);
+
+    if (conteudoParaMostrar) {
+      conteudoParaMostrar.classList.add("conteudo-ativo");
+    }
+  });
+});
+
+// Configuração inicial (Dashboard ativo por padrão)
+const btnDash = document.querySelector('[data-alvo="dashboard"]');
+if (btnDash) btnDash.classList.add('botao-ativo');
+document.getElementById('dashboard').classList.add('conteudo-ativo');
+
+
+// FUNÇÃO QUE CAPTA O ENTER DO TECLADO PARA ACIONAR OS INPUTS DE BUSCA
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const inputMatricula = document.getElementById('colaboradorretirada');
+    if (inputMatricula) {
+        inputMatricula.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); 
+                buscarColaboradorRetirada();
+            }
+        });
+    }
+
+    const inputCodigo = document.getElementById('codigoretirada');
+    if (inputCodigo) {
+        inputCodigo.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarItemParaRetirada();
+            }
+        });
+    }
+
+    const buscaGeralColab = document.getElementById('buscacolaborador');
+    if (buscaGeralColab) {
+        buscaGeralColab.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                executarBusca(); 
+            }
+        });
+    }
+
+    const buscaHigienizacaolRetirada = document.getElementById('retiradaimatricula');
+    if (buscaHigienizacaolRetirada) {
+        buscaHigienizacaolRetirada.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarColaboradorEPI(); 
+            }
+        });
+    }
+
+    const buscaHigienizacaolItem = document.getElementById('codigoitem');
+    if (buscaHigienizacaolItem) {
+        buscaHigienizacaolItem.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarItemEPI(); 
+            }
+        });
+    }
+
+    const buscaHigienizacaoDevolucao = document.getElementById('input-busca-devolucao');
+    if (buscaHigienizacaoDevolucao) {
+        buscaHigienizacaoDevolucao.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarDadosParaDevolucao(); 
+            }
+        });
+    }
+
+    const buscaHigienizacaoRelatorio = document.getElementById('input-gera-relatorio');
+    if (buscaHigienizacaoRelatorio) {
+        buscaHigienizacaoRelatorio.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                gerarRelatorioFicha(); 
+            }
+        });
+    }
+
+    const buscaMatriculaFardamentos = document.getElementById('matriculaFardamentos');
+    if (buscaMatriculaFardamentos) {
+        buscaMatriculaFardamentos.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarColaboradorDevolucao(); 
+            }
+        });
+    }
+
+    const buscaDadosUniformes = document.getElementById('buscaFardamentos');
+    if (buscaDadosUniformes) {
+        buscaDadosUniformes.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarDadosUniformes(); 
+            }
+        });
+    }
+
+    const buscaDevolucaoEpi = document.getElementById('matricula-devolucao');
+    if (buscaDevolucaoEpi) {
+        buscaDevolucaoEpi.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarRegistrosParaDevolucao(); 
+            }
+        });
+    }
+
+    const buscaRelatorioEpi = document.getElementById('matricula-relatorio');
+    if (buscaRelatorioEpi) {
+        buscaRelatorioEpi.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarRegistrosParaRelatorio(); 
+            }
+        });
+    }
+    
+    const buscaGeralEstoque = document.getElementById('buscaestoque');
+    if (buscaGeralEstoque) {
+        buscaGeralEstoque.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                executarBuscaEstoque(); 
+            }
+        });
+    }
+});
+
+
+// ATUALIZA FUNÇÕES 
+
+window.onload = function() {
+  console.log("Sistema carregado com sucesso!");
+
+  // Busca as métricas iniciais para os cards
+  atualizarCardsMetricas();
+  carregarTabelaEntregasHoje()
+
+  // Configurações de fechamento de modal ao clicar fora deles
+  window.onclick = function(event) {
+    const modalView = document.getElementById('modal-fardamentos-view');
+    const modalLista = document.getElementById('modal-fardamentos-lista');
+    const modalDevolucaoHige = document.getElementById('modal-devolucao-multiplo');
+    const modalEpiDevolucao = document.getElementById('modal-epi-devolucao');
+    
+    if (event.target == modalView) {
+      fecharModalFardamentoView();
+    }
+    if (event.target == modalLista) {
+      fecharModalFardamento(); 
+    }
+    if (event.target == modalDevolucaoHige) {
+      fecharModalMultiplo(); 
+    }
+    if (event.target == modalEpiDevolucao) {
+      fecharModalEPIDevolucao(); 
+    }
+  };
+};
+
+
+//FUNÇAO QUE ALIMENTA O DASHBOARD 
+
+function atualizarCardsMetricas() {
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (!res || res.erro) return console.error(res.erro);
+
+      // Card 1 Itens com estoque
+      document.getElementById('total-itens').innerText = res.totalDisponivel;
+      document.getElementById('periodo-selecionado').innerText = res.dataHoje;
+      setProgressoCard('--percentage-total', res.percDisponivel, 'porcentagem-itens');
+
+      // Card 2 Estoque Baixo 
+      document.getElementById('nome-solicitante').innerText = res.nomeCritico; 
+      document.getElementById('chamados-solicitante').innerText = res.totalCritico; 
+      setProgressoCard('--percentage-solicitante', res.percCritico, 'porcentagem-solicitante');
+
+      // Card 3 Entregues Hoje 
+      document.getElementById('nome-tipo').innerText = res.entregasNome;
+      document.getElementById('chamados-do-tipo').innerText = res.entregasQtd;
+      let percEntrega = res.entregasQtd > 0 ? 100 : 0; 
+      setProgressoCard('--percentage-tipo', percEntrega, 'porcentagem-tipo');
+    })
+    .roteadorSolicitacoes({ qualFuncao: "atualizarCardsMetricas" });
+}
+
+
+// FUNÇÃO AUXILIAR PARA ATUALIZAR O CSS E O TEXTO DA PORCENTAGEM
+
+function setProgressoCard(variavelCss, valor, idTexto) {
+  document.documentElement.style.setProperty(variavelCss, valor);
+  const elementoTexto = document.getElementById(idTexto);
+  if (elementoTexto) {
+    elementoTexto.innerText = valor + "%";
+  }
+}
+
+
+// ALIMENTA TABELA DE MOVIMENTAÇÕES //
+
+function carregarTabelaEntregasHoje() {
+  const tbody = document.querySelector("#tabela-ultimos-itens tbody");
+  if (!tbody) return; 
+  
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Carregando dados...</td></tr>';
+
+  google.script.run
+    .withSuccessHandler(function(entregas) {
+      tbody.innerHTML = ""; 
+
+      // VERIFICAÇÃO DE SEGURANÇA
+      if (!entregas || entregas.erro || !Array.isArray(entregas)) {
+        console.error("Erro vindo do servidor:", entregas ? entregas.erro : "Retorno vazio");
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: #ff4d4d;">Erro ao carregar dados ou nenhum item encontrado.</td></tr>';
+        return;
+      }
+
+      if (entregas.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: #a0a0a0;">Nenhum item retirado hoje</td></tr>';
+        return;
+      }
+
+      entregas.forEach(item => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.codigo || '-'}</td>
+          <td>${item.descricao || '-'}</td>
+          <td>${item.quantidade || '0'}</td>
+          <td>${item.tamanho || '-'}</td>
+          <td>${item.colaborador || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })
+    .withFailureHandler(function(err) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: #ff4d4d;">Falha na conexão com o servidor.</td></tr>';
+      console.error("Erro crítico:", err);
+    })
+    .roteadorSolicitacoes({ qualFuncao: "buscarEntregasHoje" });
+}
+
+// FUNÇÃO RETIRADA DE ITENS
+
+let itensParaRetirar = [];
+
+function buscarItemParaRetirada() {
+    const inputCodigo = document.getElementById('codigoretirada');
+    const inputDescricao = document.getElementById('descricaoretirada');
+    const inputTamanho = document.getElementById('tamanhoretirada');
+    const inputQuantidade = document.getElementById('quantidaderetirada');
+    const inputCA = document.getElementById('ca-invisivel'); 
+
+    if (!inputCodigo) return;
+
+    const codigo = inputCodigo.value.trim();
+    if (!codigo) {
+        mostrarNotificacao("Digite um código para buscar", "error");
+        return;
+    }
+
+    exibirLoader("Buscando item no estoque...");
+
+    google.script.run
+        .withSuccessHandler(function(resultado) {
+            esconderLoader();
+            if (typeof resultado === "string" && resultado.includes("ERRO")) {
+                mostrarNotificacao(resultado, "error");
+            } else {
+                
+                inputDescricao.value = resultado.descricao;
+                inputTamanho.value = resultado.tamanho;
+                
+                if (inputCA) inputCA.value = resultado.extra || "";
+                
+                inputDescricao.readOnly = true;
+                inputTamanho.readOnly = true;
+                inputDescricao.style.backgroundColor = "#f0f0f0";
+                inputTamanho.style.backgroundColor = "#f0f0f0";
+                
+                inputQuantidade.focus();
+            }
+        })
+        .withFailureHandler(function(erro) {
+            esconderLoader();
+            mostrarNotificacao("Erro na busca: " + erro, "error");
+        })
+        .roteadorSolicitacoes({ qualFuncao: "buscarItem", codigo: codigo });
+}
+
+//BUSCAR COLABORADOR PARA RETIRADE DE FARDAMENTOS
+
+function buscarColaboradorRetirada() {
+  const inputMatricula = document.getElementById('colaboradorretirada');
+  const inputNome = document.getElementById('nomeretirada');
+  const matricula = inputMatricula.value.trim();
+
+  if (!matricula) {
+    mostrarNotificacao("Digite uma matrícula para buscar", "error");
+    return;
+  }
+
+  exibirLoader("Buscando colaborador...");
+
+  google.script.run
+    .withSuccessHandler(function(resultado) {
+      esconderLoader();
+      if (typeof resultado === "string" && resultado.includes("ERRO")) {
+        mostrarNotificacao(resultado, "error");
+        inputNome.value = "";
+        inputNome.readOnly = false;
+      } else {
+        
+        inputNome.value = resultado.nome; 
+        inputNome.readOnly = true;
+        inputNome.style.backgroundColor = "#f0f0f0";
+        
+        // Foca no próximo campo lógico, código do produto
+        document.getElementById('codigoretirada').focus();
+      }
+    })
+    .withFailureHandler(function(erro) {
+      esconderLoader();
+      mostrarNotificacao("Erro técnico: " + erro, "error");
+    })
+    .roteadorSolicitacoes({ qualFuncao: "buscarColaborador", matricula: matricula });
+}
+
+//FUNÇÃO QUE RENDERIZA A LISTA DE ITENS
+
+function renderizarLista() {
+    const listaItensBody = document.getElementById('lista-itens-body');
+    const listaContainer = document.getElementById('lista-itens-container');
+    const btnFinalizar = document.getElementById('btn-finalizar-retirada');
+
+    if (!listaItensBody) return;
+
+    listaItensBody.innerHTML = ''; 
+
+    if (itensParaRetirar.length === 0) {
+        listaContainer.style.display = 'none'; 
+        btnFinalizar.style.display = 'none'; 
+        return;
+    }
+    
+    listaContainer.style.display = 'block'; 
+
+    itensParaRetirar.forEach((item, index) => {
+        const labelDestino = item.destino === "registroepi" ? "EPI" : "Fardamento";
+        const corBadge = item.destino === "registroepi" ? "#ffc107" : "#58a2ad"; 
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><span style="background-color: ${corBadge}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; font-weight: bold;">${labelDestino}</span></td>
+            <td>${item.codigo}</td>
+            <td>${item.descricao}</td>
+            <td>${item.quantidade}</td>
+            <td>${item.tamanho}</td>
+            <td>${item.colaborador}</td> 
+            <td>
+                <button onclick="removerItem(${index})" style="color: #ff4d4d; border: none; background: none; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 5px;">
+                    <i class="bi bi-trash"></i> Remover
+                </button>
+            </td>
+        `;
+        listaItensBody.appendChild(tr);
+    });
+
+    btnFinalizar.style.display = 'block'; 
+}
+
+// BOTÃO SALVAR Adicionar à lista temporária
+
+// FUNÇÃO QUE CRIA A LISTA TEMPORÁRIA 
+
+function adicionarItemNaLista() {
+    const elDestino = document.getElementById('destino-registro');
+    const elCod = document.getElementById('codigoretirada');
+    const elDesc = document.getElementById('descricaoretirada');
+    const elQtd = document.getElementById('quantidaderetirada');
+    const elTam = document.getElementById('tamanhoretirada');
+    const elMatricula = document.getElementById('colaboradorretirada');
+    const elNome = document.getElementById('nomeretirada');
+    const elCA = document.getElementById('ca-invisivel'); 
+    const elMotivo = document.getElementById('motivo-registro'); 
+
+    const destino = elDestino.value;
+    const motivo = elMotivo ? elMotivo.value : "";
+
+    
+    if (!destino || destino === "") {
+        mostrarNotificacao('Por favor, selecione Fardamento ou EPI.', 'error');
+        return;
+    }
+
+    if (destino === "registroepi" && !motivo) {
+        mostrarNotificacao('Selecione o motivo da entrega do EPI.', 'error');
+        return;
+    }
+
+    if (!elCod.value || !elDesc.value || !elQtd.value || !elMatricula.value) {
+        mostrarNotificacao('Preencha todos os campos do item.', 'error');
+        return;
+    }
+
+    itensParaRetirar.push({
+        codigo: elCod.value.trim(),
+        descricao: elDesc.value.trim(),
+        quantidade: Number(elQtd.value),
+        tamanho: elTam.value.trim(),
+        colaborador: elNome.value.trim(),
+        colaboradorID: elMatricula.value.trim(),
+        destino: destino,
+        ca: elCA ? elCA.value : "",
+        motivo: (destino === "registroepi") ? motivo : ""
+    });
+
+    renderizarLista(); 
+
+    // LIMPEZA TOTAL DOS CAMPOS 
+    
+    const camposParaLimpar = [elCod, elDesc, elQtd, elTam, elMatricula, elNome];
+    camposParaLimpar.forEach(input => {
+        if (input) {
+            input.value = '';
+            input.readOnly = false; 
+            input.style.backgroundColor = "";
+        }
+    });
+
+    elDestino.value = "";
+    if (elMotivo) {
+        elMotivo.value = "";
+        elMotivo.parentElement.style.display = "none";
+    }
+
+    if (elCA) elCA.value = "";
+    
+    elMatricula.focus(); 
+    
+    mostrarNotificacao('Item adicionado à lista!', 'success');
+}
+
+//  FUNÇÃO QUE ENVIA RETIRADA DE ITENS PARA O BACKEND 
+
+function enviarRetiradaParaBackend() {
+    if (itensParaRetirar.length === 0) {
+        mostrarNotificacao("Adicione pelo menos um item na lista antes de finalizar.", "error");
+        return;
+    }
+
+    exibirLoader("Salvando no sistema...");
+
+    google.script.run
+        .withSuccessHandler(function(res) {
+            esconderLoader();
+            mostrarNotificacao(res, "success");
+            
+            itensParaRetirar = [];
+            renderizarLista();
+            carregarTabelaEntregasHoje()
+            document.getElementById('destino-registro').value = "";
+            document.getElementById('colaboradorretirada').value = "";
+            document.getElementById('nomeretirada').value = "";
+            if(document.getElementById('motivo-registro')) {
+                document.getElementById('motivo-registro').value = "";
+                document.getElementById('motivo-registro').parentElement.style.display = "none";
+            }
+        })
+        .withFailureHandler(function(err) {
+            esconderLoader();
+            mostrarNotificacao("Erro ao salvar: " + err, "error");
+        })
+        .registrarRetiradaEstoque(itensParaRetirar); 
+}
+
+function removerItem(index) {
+    itensParaRetirar.splice(index, 1); 
+    renderizarLista(); 
+}
+
+// Monitora a escolha do tipo de registro para mostrar/esconder o motivo
+document.getElementById('destino-registro').addEventListener('change', function() {
+    const campoMotivo = document.getElementById('motivo-registro').parentElement;
+    
+    if (this.value === "registroepi") {
+        campoMotivo.style.display = "flex"; 
+    } else {
+        campoMotivo.style.display = "none";
+        document.getElementById('motivo-registro').value = ""; 
+    }
+});
+
+// FUNÇÃO DE ALERTA (NOTIFICAÇÕES) 
+
+function mostrarNotificacao(mensagem, tipo) {
+  const container = document.getElementById("toast-container");
+  const toast = document.createElement("div");
+  
+  toast.className = `toast ${tipo}`; 
+  toast.innerText = mensagem;
+
+  container.appendChild(toast);
+
+  // Remove o elemento do HTML após a animação acabar 3 segundos
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
+// FUNÇÃO LIMPA FORMULARIO 
+
+function limparFormulario() {
+  const todosOsCampos = [
+
+    //Campos de Fardamento
+    'matriculaFardamentos', 'nomeFardamentos',
+    
+    //Campos de Colaborador
+    'matriculacolaborador', 'nomecolaborador', 'funcaocolaborador', 'idcolaborador', 'buscacolaborador',
+    
+    //Campos de Itens/Estoque 
+    'codigo', 'descricao', 'quantidade', 'tamanho', 'extra', 'iditem', 'buscaestoque'
+  ];
+
+  todosOsCampos.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.value = "";
+      
+      if (el.readOnly) {
+        el.readOnly = false;
+        el.style.backgroundColor = ""; 
+      }
+    }
+  });
+
+  
+  const containerModal = document.getElementById('lista-itens-render');
+  if (containerModal) containerModal.innerHTML = "";
+  
+  if (typeof itensCarregadosNoModal !== 'undefined') {
+    itensCarregadosNoModal = [];
+  }
+}
+
+//FUNÇÃO OVERLAY LOADING
+
+function exibirLoader(mensagem = "Processando, aguarde...") {
+  const loader = document.getElementById("loader-container");
+  const texto = document.getElementById("loader-text");
+  
+  if (loader) {
+    texto.innerText = mensagem;
+    loader.style.display = "flex";
+  }
+}
+
+function esconderLoader() {
+  const loader = document.getElementById("loader-container");
+  if (loader) {
+    loader.style.display = "none";
+  }
+}
+
+// CRIA COLABORADOR 
+
+function salvarColaborador() {
+  const matricula = document.getElementById("matriculacolaborador").value;
+  const nome = document.getElementById("nomecolaborador").value;
+  const funcao = document.getElementById("funcaocolaborador").value;
+  
+
+  if (matricula === "" || funcao === "" || nome === "") {
+    mostrarNotificacao("Preencha todos os campos obrigatórios!", "error");
+    return;
+  }
+
+  exibirLoader("Salvando colaborador");
+  
+  const dados = {
+    qualFuncao: "salvarColaborador",
+    matricula: matricula,
+    nome: nome,
+    funcao: funcao,
+    idcolaborador: document.getElementById('idcolaborador').value
+  };
+  
+  google.script.run
+  .withSuccessHandler(function (resposta) {
+    esconderLoader();
+
+    if (resposta.includes("ERRO:")) {
+      mostrarNotificacao(resposta, "error");
+    } else {
+      mostrarNotificacao(resposta, "success"); 
+      limparFormulario();
+    }
+  })
+  .withFailureHandler(function (erro) {
+    esconderLoader();
+    mostrarNotificacao("Erro de conexão com o servidor", "error");
+  })
+  .roteadorSolicitacoes(dados);
+}
+
+
+// FUNÇÃO BUSCA COLABORADOR
+
+function executarBusca() {
+  const matricula = document.getElementById("buscacolaborador").value;
+  
+  if (!matricula) {
+    mostrarNotificacao("Digite uma matrícula para buscar", "error");
+    return;
+  }
+
+  exibirLoader("Buscando colaborador...");
+
+  const dados = {
+    qualFuncao: "buscarColaborador",
+    matricula: matricula
+  };
+
+  google.script.run
+    .withSuccessHandler(function(resultado) {
+      esconderLoader();
+      
+      if (typeof resultado === "string" && resultado.includes("ERRO")) {
+        mostrarNotificacao(resultado, "error");
+      } else {
+        abrirModalEdicao(resultado); 
+        limparFormulario();          
+      }
+    })
+    .withFailureHandler(function(erro) {
+      esconderLoader();
+      mostrarNotificacao("Erro na busca: " + erro, "error");
+    })
+    .roteadorSolicitacoes(dados);
+}
+
+//FUNÇÃO PARA ABRIR O MODAL DE EDIÇÃO DE COLABORADORES  
+
+function abrirModalEdicao(dados) {
+  document.getElementById("edit-id").value = dados.id;
+  document.getElementById("edit-matricula").value = dados.matricula;
+  document.getElementById("edit-nome").value = dados.nome;
+  document.getElementById("edit-funcao").value = dados.funcao;
+  document.getElementById("edit-idcolaborador").value = dados.idcolaborador;
+  
+  document.getElementById("modal-edicao").style.display = "flex";
+}
+
+function fecharModal() {
+  document.getElementById("modal-edicao").style.display = "none";
+}
+
+
+// FUNÇÃO SALVAR EDIÇÃO //
+
+function salvarEdicao() {
+  const dados = {
+    qualFuncao: "salvarColaborador",
+    idUsuario: document.getElementById('edit-id').value, 
+    matricula: document.getElementById('edit-matricula').value,
+    nome: document.getElementById('edit-nome').value,
+    funcao: document.getElementById('edit-funcao').value,
+    idcolaborador: document.getElementById('edit-idcolaborador').value
+  };
+
+  exibirLoader("Atualizando dados...");
+  
+  google.script.run
+    .withSuccessHandler(function(resposta) {
+      esconderLoader();
+      fecharModal();
+      mostrarNotificacao(resposta, "success");
+      lerDadosDosUsuarios();
+    })
+    .withFailureHandler(function(erro) {
+      esconderLoader();
+      mostrarNotificacao("Erro ao atualizar: " + erro, "error");
+    })
+    .roteadorSolicitacoes(dados);
+}
+
+//ADICIONAR ITENS NO ESTOQUE
+
+function salvarItens() {
+  const idItem = document.getElementById("iditem").value; 
+  const codigo = document.getElementById("codigo").value;
+  const descricao = document.getElementById("descricao").value;
+  const quantidade = document.getElementById("quantidade").value;
+  const tamanho = document.getElementById("tamanho").value;
+  const extra = document.getElementById("extra").value;
+
+  if (codigo === "" || descricao === "" || quantidade === "") {
+    mostrarNotificacao("Preencha código, descrição e quantidade!", "error");
+    return;
+  }
+
+  exibirLoader("Salvando Item...");
+  
+  const dados = {
+    qualFuncao: "salvaritem",
+    idItem: idItem, 
+    codigo: codigo,
+    descricao: descricao,
+    quantidade: quantidade,
+    tamanho: tamanho,
+    extra: extra
+  };
+  
+  google.script.run
+    .withSuccessHandler(function (resposta) {
+      esconderLoader();
+
+      if (resposta.includes("ERRO:")) {
+        mostrarNotificacao(resposta, "error");
+      } else {
+        mostrarNotificacao(resposta, "success"); 
+        
+        const modal = document.getElementById("modal-edicao-item");
+        if (modal) modal.style.display = "none";
+
+        limparFormulario();
+
+      }
+    })
+    .withFailureHandler(function (erro) {
+      esconderLoader();
+      mostrarNotificacao("Erro técnico: " + erro, "error");
+    })
+    .roteadorSolicitacoes(dados);
+}
+
+// FUNÇÃO BUSCA DE ESTOQUE
+
+function executarBuscaEstoque() {
+  const codigo = document.getElementById("buscaestoque").value;
+  
+  if (!codigo) {
+    mostrarNotificacao("Digite um código para buscar", "error");
+    return;
+  }
+
+  exibirLoader("Buscando item no estoque...");
+
+  const dados = {
+    qualFuncao: "buscarItem", 
+    codigo: codigo
+  };
+
+  google.script.run
+    .withSuccessHandler(function(resultado) {
+      esconderLoader();
+      
+      if (typeof resultado === "string" && resultado.includes("ERRO")) {
+        mostrarNotificacao(resultado, "error");
+      } else {
+        abrirModalEdicaoItem(resultado);
+        limparFormulario(); 
+      }
+    })
+    .withFailureHandler(function(erro) {
+      esconderLoader();
+      mostrarNotificacao("Erro na busca: " + erro, "error");
+    })
+    .roteadorSolicitacoes(dados);
+}
+
+// PREENCHE OS CAMPOS DO MODAL DE ITENS 
+
+function abrirModalEdicaoItem(dados) {
+  document.getElementById("edit-iditem").value = dados.id;
+  document.getElementById("edit-codigo").value = dados.codigo;
+  document.getElementById("edit-descricao").value = dados.descricao;
+  document.getElementById("edit-quantidade").value = dados.quantidade;
+  document.getElementById("edit-tamanho").value = dados.tamanho;
+  document.getElementById("edit-extra").value = dados.extra;
+  
+  document.getElementById("modal-edicao-item").style.display = "flex";
+}
+
+function fecharModalItem() {
+  document.getElementById("modal-edicao-item").style.display = "none";
+}
+
+// SALVA ITENS EDITADOS 
+
+function salvarItensEdicao() {
+  const dados = {
+    qualFuncao: "salvaritem", 
+    idItem: document.getElementById("edit-iditem").value,
+    codigo: document.getElementById("edit-codigo").value,
+    descricao: document.getElementById("edit-descricao").value,
+    quantidade: document.getElementById("edit-quantidade").value,
+    tamanho: document.getElementById("edit-tamanho").value,
+    extra: document.getElementById("edit-extra").value
+  };
+
+  if (!dados.descricao || !dados.quantidade) {
+    mostrarNotificacao("Preencha descrição e quantidade!", "error");
+    return;
+  }
+
+  exibirLoader("Atualizando item...");
+
+  google.script.run
+    .withSuccessHandler(function(resposta) {
+      esconderLoader();
+      if (resposta.includes("ERRO:")) {
+        mostrarNotificacao(resposta, "error");
+      } else {
+        mostrarNotificacao(resposta, "success");
+        fecharModalItem(); 
+ 
+      }
+    })
+    .withFailureHandler(function(erro) {
+      esconderLoader();
+      mostrarNotificacao("Erro ao atualizar: " + erro, "error");
+    })
+    .roteadorSolicitacoes(dados);
+}
+
+// ATUALIZA/MONTA TABELA DE ESTOQUE
+
+function carregarTabelaEstoque() {
+    exibirLoader("Sincronizando dados do estoque...");
+    
+    const dadosSolicitacao = {
+        qualFuncao: "buscarDadosEstoque"
+    };
+
+    google.script.run
+        .withSuccessHandler(function(itens) {
+            esconderLoader();
+            const tbody = document.getElementById('lista-estoque-body');
+            
+            if (!tbody) return;
+
+            //Menor para o Maior
+            if (itens && itens.length > 0) {
+                itens.sort((a, b) => {
+                    
+                    const qtdA = Number(a.quantidade) || 0;
+                    const qtdB = Number(b.quantidade) || 0;
+                    return qtdA - qtdB; 
+                });
+            }
+            
+
+            let htmlFinal = "";
+
+            if (!itens || itens.length === 0) {
+                htmlFinal = '<tr><td colspan="4" style="text-align:center;">Nenhum item encontrado no estoque.</td></tr>';
+            } else {
+                itens.forEach(item => {
+                    const estiloAlerta = Number(item.quantidade) <= 2 
+                        ? 'style="color: #d9534f; font-weight: bold;"' 
+                        : '';
+
+                    htmlFinal += `
+                        <tr>
+                            <td>${item.codigo}</td>
+                            <td>${item.descricao}</td>
+                            <td ${estiloAlerta}>${item.quantidade}</td>
+                            <td>${item.tamanho}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            tbody.innerHTML = htmlFinal;
+        })
+        .withFailureHandler(function(erro) {
+            esconderLoader();
+            mostrarNotificacao("Erro ao carregar banco de dados.", "error");
+        })
+        .roteadorSolicitacoes(dadosSolicitacao);
+}
+
+//FUNÇÃO PESQUISA ESTOQUE 
+
+function filtrarTabelaEstoque() {
+  const input = document.getElementById("filtro-estoque");
+  const filtro = input.value.toUpperCase();
+  const tabela = document.getElementById("tabela-estoque-geral");
+  const tr = tabela.getElementsByTagName("tr");
+
+  for (let i = 1; i < tr.length; i++) { 
+    const tdCodigo = tr[i].getElementsByTagName("td")[0];
+    const tdDescricao = tr[i].getElementsByTagName("td")[1];
+    
+    if (tdCodigo || tdDescricao) {
+      const textoCodigo = tdCodigo.textContent || tdCodigo.innerText;
+      const textoDescricao = tdDescricao.textContent || tdDescricao.innerText;
+      
+      if (textoCodigo.toUpperCase().indexOf(filtro) > -1 || textoDescricao.toUpperCase().indexOf(filtro) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
+
+
+//BUCAR/PREENCHE COLABORADOR EPI
+
+function buscarColaboradorEPI() {
+    const inputMatricula = document.getElementById('retiradaimatricula');
+    const inputNome = document.getElementById('retiradanome');
+    const inputFuncao = document.getElementById('retiradafuncao');
+    const inputData = document.getElementById('campodata');
+    
+    const matricula = inputMatricula.value.trim();
+    if (!matricula) return mostrarNotificacao("Digite a matrícula", "error");
+
+    exibirLoader("Buscando colaborador...");
+
+    google.script.run
+        .withSuccessHandler(function(colab) {
+            esconderLoader();
+            
+            // VERIFICAÇÃO: Se colab for null ou não existir
+            if (colab && colab.nome) {
+                inputNome.value = colab.nome;
+                inputFuncao.value = colab.funcao;
+                
+                inputNome.readOnly = true;
+                inputFuncao.readOnly = true;
+                inputNome.style.backgroundColor = "#e9ecef";
+                inputFuncao.style.backgroundColor = "#e9ecef";
+
+                // Preenche data atual 
+                const hoje = new Date();
+                inputData.value = hoje.toLocaleDateString('pt-BR');
+                
+                document.getElementById('codigoitem').focus(); 
+            } else {
+                // Se não encontrou, limpa os campos para não exibir 'undefined'
+                inputNome.value = "";
+                inputFuncao.value = "";
+                inputNome.readOnly = false;
+                inputFuncao.readOnly = false;
+                inputNome.style.backgroundColor = "#fff";
+                inputFuncao.style.backgroundColor = "#fff";
+                
+                mostrarNotificacao("Matrícula " + matricula + " não encontrada!", "error");
+                inputMatricula.focus();
+            }
+        })
+        .withFailureHandler(function(err) {
+            esconderLoader();
+            mostrarNotificacao("Erro técnico ao buscar colaborador.", "error");
+        })
+        .roteadorSolicitacoes({ qualFuncao: "buscarColaborador", matricula: matricula });
+}
+
+//BUSCA ITEM PARA PREENCHER FORMULARIO DE HIGENIZAÇÃO DE EPI
+
+function buscarItemEPI() {
+    const inputCodigo = document.getElementById('codigoitem');
+    const codigo = inputCodigo.value.trim();
+
+    if (!codigo) return mostrarNotificacao("Digite o código do item", "error");
+
+    exibirLoader("Buscando item no estoque...");
+
+    google.script.run
+        .withSuccessHandler(function(item) {
+            esconderLoader();
+            if (item && !item.toString().includes("ERRO")) {
+                mostrarNotificacao("Item encontrado: " + item.descricao, "success");
+                
+                inputCodigo.dataset.descricao = item.descricao;
+                document.getElementById('extra-item-temp').value = item.extra;
+                
+                document.getElementById('idretirada').focus(); 
+            } else {
+                mostrarNotificacao("Item não encontrado no estoque", "error");
+            }
+        })
+        .roteadorSolicitacoes({ qualFuncao: "buscarItemPorCodigoEpi", codigo: codigo });
+}
+
+// REGISTRA A RETIRADA DE EPI
+
+function registrarRetiradaEPI() {
+    const elMatricula = document.getElementById('retiradaimatricula');
+    const elNome = document.getElementById('retiradanome');
+    const elFuncao = document.getElementById('retiradafuncao');
+    const elCodigo = document.getElementById('codigoitem');
+    const elEpiSerial = document.getElementById('idretirada');
+    const elData = document.getElementById('campodata');
+    const elExtra = document.getElementById('extra-item-temp');
+
+    const dados = {
+        qualFuncao: "salvarMovimentacaoEPI",
+        matricula: elMatricula.value.trim(),
+        nome: elNome.value.trim(),
+        funcao: elFuncao.value.trim(),
+        codigo: elCodigo.value.trim(),
+        descricao: elCodigo.dataset.descricao || "", 
+        epiSerial: elEpiSerial.value.trim(),
+        dataRetirada: elData.value.trim(),
+        extra: elExtra ? elExtra.value : ""
+    };
+
+    if (!dados.matricula || !dados.codigo || !dados.epiSerial) {
+        return mostrarNotificacao("Preencha Matrícula, Código e Serial!", "error");
+    }
+    
+    if (!dados.descricao) {
+        return mostrarNotificacao("Valide o código do item na lupa antes de salvar.", "error");
+    }
+
+    exibirLoader("Gravando retirada...");
+
+    google.script.run
+        .withSuccessHandler(function(res) {
+            esconderLoader();
+            if (res.includes("ERRO")) {
+                mostrarNotificacao(res, "error");
+            } else {
+                mostrarNotificacao(res, "success");
+                
+                // Limpeza dos campos
+                [elMatricula, elNome, elFuncao, elCodigo, elEpiSerial, elData].forEach(input => {
+                    input.value = "";
+                    input.readOnly = false;
+                    input.style.backgroundColor = "";
+                });
+                if(elExtra) elExtra.value = "";
+                elCodigo.dataset.descricao = "";
+                
+                if (typeof atualizarTabelaPendentes === "function") atualizarTabelaPendentes();
+            }
+        })
+        .withFailureHandler(function(err) {
+            esconderLoader();
+            mostrarNotificacao("Erro de conexão com o servidor.", "error");
+        })
+        .roteadorSolicitacoes(dados);
+}
+
+//IMPORTE DE CALENDARIO
+
+flatpickr("#dev-data-hoje", {
+  mode: "single",       
+  dateFormat: "d/m/Y",
+  defaultDate: "today"     
+});
+
+// BUSCA COLABORADOR PARA DEVOLUÇÃO DE EPI
+
+let epiOriginalDoBanco = ""; 
+
+function buscarDadosParaDevolucao() {
+  const inputBusca = document.getElementById('input-busca-devolucao');
+  const matricula = inputBusca.value.trim();
+
+  if (!matricula) return mostrarNotificacao("Digite a matrícula.", "error");
+
+  exibirLoader("Buscando itens pendentes...");
+
+  google.script.run
+    .withSuccessHandler(function(resposta) {
+      esconderLoader();
+
+      if (resposta.erro) return mostrarNotificacao(resposta.erro, "error");
+      if (resposta.itens.length === 0) return mostrarNotificacao("Nenhum EPI pendente para este colaborador.", "info");
+
+      // Atualiza nome do colaborador
+      document.getElementById('dev-nome-colaborador').innerText = "Colaborador: " + resposta.nome;
+
+      // Limpa e preenche a lista de itens
+      const container = document.getElementById('lista-itens-devolucao-epi');
+      container.innerHTML = ""; 
+
+      resposta.itens.forEach((item, index) => {
+        const row = document.createElement('div');
+        row.className = "item-devolucao-row";
+        
+        // Atributo data-id 
+        row.setAttribute('data-id-planilha', item.idLinha); 
+
+        row.innerHTML = `
+          <div class="col-desc"><strong>${item.descricao}</strong></div>
+          <div class="col-registrado"><span class="badge-epi">${item.epiOriginal}</span></div>
+          <div class="col-input">
+            <input type="text" class="input-confirma-epi" placeholder="Repita o nº">
+            <input type="hidden" class="valor-original" value="${item.epiOriginal}">
+          </div>
+          <div class="col-data">
+            <input type="date" class="input-data-dev" value="${new Date().toISOString().split('T')[0]}">
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      document.getElementById('modal-devolucao-multiplo').style.display = 'flex';
+    })
+    .roteadorSolicitacoes({ qualFuncao: "buscarTodosEpisPendentes", matricula: matricula });
+}
+
+// SALVAR DEVOLUÇÃO DE EPI HIGENIZAÇÃO
+
+function executarProcessoDevolucao() {
+    const campos = {
+        matricula: document.getElementById('final-matricula'),
+        epiOriginal: document.getElementById('final-epi-original'),
+        epiDigitado: document.getElementById('final-epi-digitado'),
+        dataDev: document.getElementById('final-data-devolucao')
+    };
+
+    for (let key in campos) {
+        if (!campos[key]) {
+            console.error("Erro: O campo " + key + " não foi encontrado no HTML.");
+            mostrarNotificacao("Erro interno no formulário. Recarregue a página.", "error");
+            return;
+        }
+    }
+
+    const vMatricula = campos.matricula.value.trim();
+    const vEpiOriginal = campos.epiOriginal.value.trim();
+    const vEpiDigitado = campos.epiDigitado.value.trim();
+    const vData = campos.dataDev.value;
+
+    if (vEpiDigitado === "") {
+        mostrarNotificacao("Por favor, digite o número do EPI para confirmar.", "error");
+        campos.epiDigitado.focus();
+        return;
+    }
+
+    if (vEpiDigitado !== vEpiOriginal) {
+        mostrarNotificacao("O número do EPI informado não coincide com o registro!", "error");
+        campos.epiDigitado.style.border = "2px solid red";
+        return;
+    } else {
+        campos.epiDigitado.style.border = "1px solid #ccc";
+    }
+
+    if (!vData) {
+        mostrarNotificacao("Selecione a data de devolução.", "error");
+        return;
+    }
+
+    exibirLoader("Gravando devolução...");
+
+    google.script.run
+        .withSuccessHandler(function(res) {
+            esconderLoader();
+            if (res.includes("Sucesso")) {
+                mostrarNotificacao(res, "success");
+                fecharModalDevolucao();
+                if (typeof atualizarTabelaPendentes === "function") atualizarTabelaPendentes();
+            } else {
+                mostrarNotificacao(res, "error");
+            }
+        })
+        .withFailureHandler(function(err) {
+            esconderLoader();
+            mostrarNotificacao("Erro de conexão.", "error");
+        })
+        .roteadorSolicitacoes({
+            qualFuncao: "atualizarDevolucaoEPI",
+            matricula: vMatricula,
+            dataDevolucao: vData
+        });
+}
+
+
+//SALVAR DEVOLUÇÕES DE HIGIENIZAÇÃO 
+
+function salvarTodasDevolucoes() {
+    const linhas = document.querySelectorAll('.item-devolucao-row');
+    const dadosParaAtualizar = [];
+    let erroValidacao = false;
+
+    linhas.forEach(row => {
+        const idPlanilha = row.getAttribute('data-id-planilha');
+        const epiOriginal = row.querySelector('.valor-original').value;
+        const epiDigitado = row.querySelector('.input-confirma-epi').value.trim();
+        const dataDevolucao = row.querySelector('.input-data-dev').value;
+
+        if (epiDigitado !== "") {
+            if (epiDigitado !== epiOriginal) {
+                row.style.backgroundColor = "#ffe6e6";
+                erroValidacao = true;
+            } else if (!dataDevolucao) {
+                row.style.backgroundColor = "#fff4e6"; 
+                erroValidacao = true;
+            } else {
+                row.style.backgroundColor = "";
+                dadosParaAtualizar.push({
+                    idLinha: idPlanilha,
+                    dataDevolucao: dataDevolucao
+                });
+            }
+        }
+    });
+
+    if (erroValidacao) {
+        return mostrarNotificacao("Existem divergências nos números de EPI ou datas vazias. Verifique as linhas marcadas.", "error");
+    }
+
+    if (dadosParaAtualizar.length === 0) {
+        return mostrarNotificacao("Nenhum item foi preenchido para devolução.", "warning");
+    }
+
+    exibirLoader("Processando devoluções...");
+
+    google.script.run
+        .withSuccessHandler(function(res) {
+            esconderLoader();
+            mostrarNotificacao(res, "success");
+            fecharModalMultiplo();
+            if (typeof atualizarTabelaPendentes === "function") atualizarTabelaPendentes();
+        })
+        .withFailureHandler(function(err) {
+            esconderLoader();
+            mostrarNotificacao("Erro ao salvar devoluções.", "error");
+        })
+        .roteadorSolicitacoes({
+            qualFuncao: "processarDevolucaoLote",
+            itens: dadosParaAtualizar
+        });
+}
+// FECHAR MODAL DE DEVOLUÇÃO DE HIGIENIZAÇÃO DE EPI
+
+function fecharModalMultiplo() {
+    const modal = document.getElementById('modal-devolucao-multiplo');
+    if (modal) modal.style.display = 'none';
+
+    const container = document.getElementById('lista-itens-devolucao-epi');
+    if (container) container.innerHTML = "";
+
+    const nomeColab = document.getElementById('dev-nome-colaborador');
+    if (nomeColab) nomeColab.innerText = "Colaborador: ";
+    
+    const inputBusca = document.getElementById('input-busca-devolucao');
+    if (inputBusca) {
+        inputBusca.value = "";
+        inputBusca.focus();
+    }
+}
+
+// FECHAR MODAL DE DEVOLUÇÇAO DE EPI
+
+function fecharModalDevolucao() {
+  const modal = document.getElementById('modal-devolucao');
+  
+  if (modal) {
+    modal.style.display = 'none';
+  }
+
+  const camposParaLimpar = [
+    'dev-matricula', 
+    'dev-nome', 
+    'dev-funcao', 
+    'dev-epi-id', 
+    'dev-data-retirada', 
+    'dev-item-nome', 
+    'dev-epi-serial', 
+    'dev-data-hoje'
+  ];
+
+  camposParaLimpar.forEach(id => {
+    const campo = document.getElementById(id);
+    if (campo) {
+      campo.value = "";
+      campo.style.border = ""; 
+      campo.style.backgroundColor = "";
+    }
+  });
+
+  epiOriginalDoBanco = "";
+  
+}
+
+//PREENCHE TABELA DE EPIs PEDENTE DE DEVOLUÇÃO 
+
+function atualizarTabelaPendentes() {
+  google.script.run
+    .withSuccessHandler(function(pendentes) {
+      const tbody = document.getElementById('lista-devolucao-pendentes');
+      if (!tbody) return;
+      
+      tbody.innerHTML = ""; 
+
+      if (pendentes.erro) {
+        console.error("Erro ao buscar pendentes:", pendentes.erro);
+        return;
+      }
+
+      if (pendentes.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; padding: 20px;'>Nenhum EPI pendente de devolução.</td></tr>";
+        return;
+      }
+
+      pendentes.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.matricula}</td>
+          <td>${item.nome}</td>
+          <td>${item.funcao}</td>
+          <td>${item.epi}</td>
+          <td>${item.dataRetirada}</td>
+          <td style="color: red; font-weight: bold;">Pendente</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })
+    .roteadorSolicitacoes({ qualFuncao: "buscarPendentesDevolucao" });
+}
+
+//CONSULTA NOME PARA DEVOLUÇÃO DE FARDAMENTOS
+
+let itensCarregadosNoModal = []; 
+
+function buscarColaboradorDevolucao() {
+  const elMatricula = document.getElementById('matriculaFardamentos');
+  const elNome = document.getElementById('nomeFardamentos');
+  const container = document.getElementById('lista-itens-render');
+  const modal = document.getElementById('modal-fardamentos-lista');
+  const cabecalho = document.getElementById('nome-cabecalho-modal');
+
+  if (!elMatricula) return;
+  const matricula = elMatricula.value.trim();
+
+  if (!matricula) {
+    mostrarNotificacao("Por favor, digite a matrícula.", "error");
+    return;
+  }
+
+  exibirLoader("Buscando itens pendentes...");
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      esconderLoader();
+
+      if (res.erro) {
+        mostrarNotificacao(res.erro, "error");
+        if (elNome) elNome.value = "";
+        return;
+      }
+
+      if (elNome) {
+        elNome.value = res.nome;
+        elNome.readOnly = true;
+        elNome.style.backgroundColor = "#f0f0f0";
+      }
+
+      if (cabecalho) cabecalho.innerText = "Colaborador: " + res.nome;
+      container.innerHTML = "";
+      itensCarregadosNoModal = res.itens;
+
+      res.itens.forEach((item, index) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = "item-devolucao-linha";
+        itemDiv.innerHTML = `
+          <span class="item-nome-texto">${item.itemNome}</span>
+          <div class="input-container-data">
+            <input type="text" 
+                   id="data-dev-${index}" 
+                   class="flatpickr-devolucao-input" 
+                   placeholder="Escolha a data">
+          </div>
+        `;
+        container.appendChild(itemDiv);
+      });
+
+      modal.style.display = 'flex';
+
+
+      flatpickr(".flatpickr-devolucao-input", {
+        dateFormat: "d/m/Y", 
+        locale: "pt",        
+        allowInput: true,    
+        disableMobile: "true" 
+      });
+    })
+    .withFailureHandler(function(err) {
+      esconderLoader();
+      mostrarNotificacao("Erro técnico de conexão.", "error");
+    })
+    .roteadorSolicitacoes({ 
+        qualFuncao: "buscarItensPendentesPorMatricula", 
+        matricula: matricula 
+    });
+}
+
+function processarEnvioDevolucoes() {
+  const listaParaEnviar = itensCarregadosNoModal.map((item, index) => {
+    const elInput = document.getElementById(`data-dev-${index}`);
+    
+    const dataFormatada = elInput ? elInput.value : "";
+
+    return {
+      linha: item.linha,
+      data: dataFormatada 
+    };
+  }).filter(item => item.data !== "");
+
+  if (listaParaEnviar.length === 0) {
+    mostrarNotificacao("Informe ao menos uma data de devolução.", "warning");
+    return;
+  }
+
+  exibirLoader("Registrando devoluções...");
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      esconderLoader();
+      mostrarNotificacao(res, "success");
+      fecharModalFardamento();
+      document.getElementById('matriculaFardamentos').value = "";
+      document.getElementById('nomeFardamentos').value = "";
+    })
+    .roteadorSolicitacoes({ 
+        qualFuncao: "salvarDatasDevolucaoFardamento", 
+        lista: listaParaEnviar 
+    });
+}
+
+function fecharModalFardamento() {
+  document.getElementById('modal-fardamentos-lista').style.display = 'none';
+  limparFormulario();
+}
+
+//ACOMPANHAMENTO DE FARDAMENTOS //
+
+function buscarDadosUniformes() {
+  // Captura de Elementos e Validação inicial
+  const inputBusca = document.getElementById('buscaFardamentos');
+  const elNome = document.getElementById('nome-colaborador');
+  const tbody = document.getElementById('corpo-tabela-uniformes');
+  const modal = document.getElementById('modal-fardamentos-view');
+
+  if (!inputBusca) {
+    console.error("Erro: Input 'buscaFardamentos' não encontrado.");
+    return;
+  }
+
+  const matricula = inputBusca.value.trim();
+
+  if (!matricula) {
+    mostrarNotificacao("Por favor, informe a matrícula para pesquisar.", "warning");
+    return;
+  }
+
+  exibirLoader("Buscando histórico de uniformes...");
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      esconderLoader();
+
+      if (!res) {
+        mostrarNotificacao("Erro: O servidor não enviou uma resposta válida.", "error");
+        return;
+      }
+
+      if (res.erro) {
+        mostrarNotificacao(res.erro, "error");
+        if (elNome) elNome.value = "";
+        if (tbody) tbody.innerHTML = "";
+        return;
+      }
+
+      if (res.itens && res.itens.length > 0) {
+        res.itens.sort(function(a, b) {
+          const dataA = a.dataDevolucao;
+          const dataB = b.dataDevolucao;
+
+          const isPendenteA = (!dataA || dataA === "" || dataA === "Pendente");
+          const isPendenteB = (!dataB || dataB === "" || dataB === "Pendente");
+
+          //  Pendentes sempre sobem (-1)
+          if (isPendenteA && !isPendenteB) return -1;
+          if (!isPendenteA && isPendenteB) return 1;
+
+          // Se ambos forem pendentes, mantém a ordem entre eles
+          if (isPendenteA && isPendenteB) return 0;
+
+          // Se ambos tiverem data, ordena da menor para a maior
+          return new Date(dataA) - new Date(dataB);
+        });
+      }
+
+      if (elNome) {
+        elNome.value = res.nome || "Nome não encontrado";
+        elNome.readOnly = true;
+      }
+
+      if (tbody) {
+        tbody.innerHTML = ""; 
+
+        res.itens.forEach(function(item) {
+          const tr = document.createElement('tr');
+
+          const formatarData = (dataBruta) => {
+            if (!dataBruta || dataBruta === "" || dataBruta === "Pendente") return "Pendente";
+            const d = new Date(dataBruta);
+            return isNaN(d.getTime()) ? dataBruta : d.toLocaleDateString('pt-BR');
+          };
+
+          const dataRet = formatarData(item.dataRetirada);
+          const dataDev = formatarData(item.dataDevolucao);
+
+          const estiloPendente = dataDev === "Pendente" ? "style='color: red; font-weight: bold;'" : "";
+
+          tr.innerHTML = `
+            <td>${dataRet}</td>
+            <td style="text-align: center;">${item.quantidade}</td>
+            <td>${item.descricao}</td>
+            <td style="text-align: center;">${item.tamanho}</td>
+            <td ${estiloPendente}>${dataDev}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      if (modal) {
+        modal.style.display = 'flex';
+      } else {
+        console.error("Erro: Modal 'modal-fardamentos-view' não encontrado.");
+      }
+    })
+    .withFailureHandler(function(err) {
+      esconderLoader();
+      mostrarNotificacao("Erro de conexão: " + err.message, "error");
+    })
+    .roteadorSolicitacoes({ 
+      qualFuncao: "buscarMovimentacoesUniformes", 
+      matricula: matricula 
+    });
+}
+
+// FUNÇÃO PARA FECHAR MODAL E LIMPAR A TABELA 
+
+function fecharModalFardamentoView() {
+  const modal = document.getElementById('modal-fardamentos-view');
+  if (modal) modal.style.display = 'none';
+  
+  const tbody = document.getElementById('corpo-tabela-uniformes');
+  if (tbody) tbody.innerHTML = "";
+}
+
+//IMPRESSÃO DO MODAL DE INIFORMES //
+
+async function baixarPDFUniformes() {
+    //Verifica se a biblioteca base existe
+    if (!window.jspdf) {
+        return mostrarNotificacao("Erro: Biblioteca jsPDF não encontrada.", "error");
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
+
+    //carrega a Logo do Modal
+    const imgLogo = document.querySelector('.main-logo img');
+    if (imgLogo && imgLogo.src) {
+        try {
+            doc.addImage(imgLogo.src, 'PNG', 14, 10, 40, 15);
+        } catch (e) {
+            console.warn("Não foi possível carregar a logo no PDF:", e);
+        }
+    }
+
+    //Configurações de Cores e Dados
+    const corCabecalho = [88, 162, 173];
+    const nomeColaborador = document.getElementById('nome-colaborador').value || "Não informado";
+    const dataEmissao = new Date().toLocaleDateString('pt-BR');
+
+    // Título e Declaração
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("Controle de Uniformes", 105, 18, { align: "center" });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    const textoDeclaracao = "Declaro ter recebido os uniformes abaixo especificados, comprometendo-me em usá-los de acordo com as normas da Empresa.";
+    const splitTexto = doc.splitTextToSize(textoDeclaracao, 90);
+    doc.text(splitTexto, 110, 28);
+
+    // Destaque para o nome do Colaborador
+    doc.setFillColor(240, 240, 240);
+    doc.rect(14, 48, 182, 8, 'F');
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text(`COLABORADOR: ${nomeColaborador.toUpperCase()}`, 16, 54);
+
+
+    if (typeof doc.autoTable !== 'function') {
+        return mostrarNotificacao("Erro: Plugin autoTable não carregado. Verifique os scripts no HTML.", "error");
+    }
+
+    doc.autoTable({
+        html: '.tabela-uniformes', 
+        startY: 62,
+        theme: 'grid',
+        headStyles: { 
+            fillColor: corCabecalho, 
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            halign: 'center'
+        },
+        styles: { 
+            fontSize: 9, 
+            cellPadding: 3, 
+            valign: 'middle' 
+        },
+        columnStyles: {
+            0: { cellWidth: 30 }, // Data
+            1: { halign: 'center', cellWidth: 20 }, // Qtd
+            2: { cellWidth: 'auto' }, // Descrição
+            3: { halign: 'center', cellWidth: 20 }, // Tamanho
+            4: { cellWidth: 35 } // Devolução
+        },
+        didParseCell: function (data) {
+            if (data.cell.text && data.cell.text[0] === 'Pendente') {
+                data.cell.styles.textColor = [200, 0, 0];
+                data.cell.styles.fontStyle = 'bold';
+            }
+        }
+    });
+
+    //  Bloco de Assinatura 
+    const finalY = doc.lastAutoTable.finalY + 30;
+    const posicaoAssinatura = finalY > 270 ? (doc.addPage(), 40) : finalY;
+
+    doc.setDrawColor(0);
+    doc.line(60, posicaoAssinatura, 150, posicaoAssinatura); 
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("Assinatura do Colaborador", 105, posicaoAssinatura + 5, { align: "center" });
+    
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "italic");
+    doc.text(`Documento gerado em: ${dataEmissao}`, 14, 285);
+
+    // Abrir em nova aba com pré-visualização de impressão
+    try {
+        const blob = doc.output('blob');
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        
+        // Limpeza após um tempo para libertar memória
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+    } catch (err) {
+        console.error("Erro ao abrir PDF:", err);
+        doc.save(`Controle_Uniformes_${nomeColaborador}.pdf`); //faz download se falhar ao abrir
+    }
+}
+
+//FUNÇÃO DEVOLUÇÃO DE EPI
+
+let listaEPIsNoModal = []; 
+
+function buscarRegistrosParaDevolucao() {
+    const elMatricula = document.getElementById('matricula-devolucao'); 
+    const matricula = elMatricula.value.trim();
+
+    if (!matricula) {
+        return mostrarNotificacao("Informe a matrícula para buscar itens pendentes.", "warning");
+    }
+
+    exibirLoader("Buscando EPIs pendentes...");
+
+    google.script.run
+        .withSuccessHandler(function(res) {
+            esconderLoader();
+
+            if (res.erro) return mostrarNotificacao(res.erro, "error");
+
+            document.getElementById('epi-dev-cabecalho').innerText = "Colaborador: " + res.nome;
+            const container = document.getElementById('epi-dev-lista-render');
+            container.innerHTML = "";
+            
+            listaEPIsNoModal = res.itens; 
+
+            res.itens.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "item-devolucao-linha";
+                itemDiv.style = "display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid #f0f0f0;";
+                
+                itemDiv.innerHTML = `
+                  <div style="display:flex; flex-direction:column;">
+                      <span class="item-nome-texto" style="font-weight:bold; color:#333;">${item.itemNome}</span>
+                      <small style="color:#666;">CA: ${item.ca || 'N/A'}</small>
+                  </div>
+                  <div class="input-container-data">
+                    <input type="text" 
+                           id="epi-data-input-${index}" 
+                           class="flatpickr-epi-dev" 
+                           placeholder="Data de Devolução"
+                           style="width:130px; padding:6px; border:1px solid #ccc; border-radius:4px;">
+                  </div>
+                `;
+                container.appendChild(itemDiv);
+            });
+
+            document.getElementById('modal-epi-devolucao').style.display = 'flex';
+
+            flatpickr(".flatpickr-epi-dev", {
+                dateFormat: "d/m/Y",
+                locale: "pt",
+                allowInput: true,
+                defaultDate: "today" 
+            });
+        })
+        .withFailureHandler(function(err) {
+            esconderLoader();
+            mostrarNotificacao("Erro ao conectar com o servidor.", "error");
+        })
+        .roteadorSolicitacoes({ 
+            qualFuncao: "buscarEPIsPendentes", 
+            matricula: matricula 
+        });
+}
+
+// COLETA TODAS AS DATAS E ENVIA PARA O SERVIDOR
+
+function enviarLoteDevolucaoEPI() {
+    const dadosParaEnviar = [];
+
+    listaEPIsNoModal.forEach((item, index) => {
+        const input = document.getElementById(`epi-data-input-${index}`);
+        const dataSelecionada = input ? input.value : "";
+        
+        if (dataSelecionada) {
+            dadosParaEnviar.push({
+                id: item.id,   
+                data: dataSelecionada
+            });
+        }
+    });
+
+    if (dadosParaEnviar.length === 0) {
+        return mostrarNotificacao("Selecione ao menos uma data de devolução.", "warning");
+    }
+
+    exibirLoader("Salvando devoluções...");
+
+    google.script.run
+        .withSuccessHandler(function(res) {
+            esconderLoader();
+            if (res.sucesso) {
+                mostrarNotificacao("Devoluções registradas com sucesso!", "success");
+                fecharModalEPIDevolucao();
+                document.getElementById('matricula-devolucao').value = "";
+            } else {
+                mostrarNotificacao(res.erro || "Erro ao salvar.", "error");
+            }
+        })
+        .withFailureHandler(function(err) {
+            esconderLoader();
+            mostrarNotificacao("Erro de conexão.", "error");
+        })
+        .roteadorSolicitacoes({ 
+            qualFuncao: "registrarDevolucao", 
+            listaDevolucoes: dadosParaEnviar 
+        });
+}
+
+// Fecha o modal
+function fecharModalEPIDevolucao() {
+    document.getElementById('modal-epi-devolucao').style.display = 'none';
+}
+
+
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('modalDevolucao');
+    
+    if (event.target === modal) {
+        fecharModalLimpar();
+    }
+});
+
+// FUNÇÃO PARA FECHAR E LIMPAR O INPUT DE BUSCA
+
+function fecharModalLimpar() {
+    const modal = document.getElementById('modalDevolucao');
+    const inputMatricula = document.getElementById('matricula-devolucao');
+    
+    modal.style.display = 'none';
+    
+    if (inputMatricula) {
+        inputMatricula.value = '';
+        inputMatricula.focus();
+    }
+}
+
+
+//GERA RELATORIO DE HIGIENIZAÇÃO DE EPI
+
+function gerarRelatorioFicha() {
+    const inputBusca = document.getElementById('input-gera-relatorio');
+    const matricula = inputBusca.value.trim();
+
+    if (!matricula) {
+        return mostrarNotificacao("Por favor, digite a matrícula.", "error");
+    }
+
+    exibirLoader("Buscando dados no sistema...");
+
+    google.script.run
+        .withSuccessHandler(function(res) {
+            esconderLoader();
+            
+            if (res.erro) {
+                return mostrarNotificacao(res.erro, "error");
+            }
+
+            res.matricula = matricula; 
+            abrirModalFichaEPI(res);
+        })
+        .withFailureHandler(function(err) {
+            esconderLoader();
+            mostrarNotificacao("Erro de conexão com o servidor.", "error");
+        })
+        .roteadorSolicitacoes({ 
+            qualFuncao: "buscarDadosFichaCompleta", 
+            matricula: matricula 
+        });
+}
+
+//FUNÇÃO QUE PREENCHE O MODAL COM O LAYOUT DA IMAGEM 
+
+function abrirModalFichaEPI(res) {
+    document.getElementById('span-nome').innerText = res.nome || "";
+    document.getElementById('span-matricula').innerText = res.matricula || "";
+    document.getElementById('span-funcao').innerText = res.funcao || "";
+    
+    const tbody = document.getElementById('tabela-corpo-pdf');
+    tbody.innerHTML = ""; 
+
+    if (res.itens && res.itens.length > 0) {
+        res.itens.forEach(item => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${item.data}</td>
+                    <td style="color: #2c7bb6; font-weight: bold;">1</td>
+                    <td>${item.descricao}</td>
+                    <td>${item.ca}</td>
+                </tr>`;
+        });
+    } else {
+        tbody.innerHTML = "<tr><td colspan='4'>Nenhum item encontrado para este colaborador.</td></tr>";
+    }
+
+
+    document.getElementById('modal-ficha-pdf').style.display = 'flex';
+}
+
+//FECHA MODAL DE HIGIENIZAÇÃO 
+
+function fecharModalFicha() {
+    const modal = document.getElementById('modal-ficha-pdf');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+
+    const tbody = document.getElementById('tabela-corpo-pdf');
+    if (tbody) {
+        tbody.innerHTML = "";
+    }
+
+    const inputBusca = document.getElementById('input-gera-relatorio');
+    if (inputBusca) {
+        inputBusca.value = ""; 
+        inputBusca.focus();   
+    }
+
+    const containerScroll = document.querySelector('.tabela-container-scroll');
+    if (containerScroll) {
+        containerScroll.scrollTop = 0;
+    }
+}
+
+//GERA PDF DO MODAL
+
+async function baixarPDFComBiblioteca() {
+    if (!window.jspdf || typeof jspdf.jsPDF !== 'function') {
+        return mostrarNotificacao("Erro: Bibliotecas de PDF não carregadas corretamente.", "error");
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
+
+    const nomeColab = document.getElementById('span-nome').innerText || "Não informado";
+    const matricula = document.getElementById('span-matricula').innerText || "";
+    const funcao = document.getElementById('span-funcao').innerText || "";
+    const filial = "Juazeiro do Norte - CE";
+
+    const imgLogo = document.querySelector('.td-logo img');
+    if (imgLogo && imgLogo.src) {
+        try { doc.addImage(imgLogo.src, 'PNG', 14, 10, 45, 12); } catch (e) { console.warn(e); }
+    }
+
+    doc.setDrawColor(0);
+    doc.rect(14, 10, 50, 15); 
+    doc.rect(64, 10, 132, 15); 
+    
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("FICHA DE CONTROLE DE HIGIENIZAÇÃO DE EPI", 130, 19, { align: "center" });
+
+    doc.setFontSize(7);
+    doc.setFont("helvetica", "bold");
+    doc.text("Termo de Responsabilidade:", 14, 30);
+    doc.setFont("helvetica", "normal");
+    const termo = "Declaro ter recebido do Atacadão S.A., os equipamentos de proteção individual (EPI) registrados nesta ficha, em perfeitas condições de uso, os quais desde já me comprometo a usá-los na execução de minhas tarefas, zelando pela sua perfeita guarda, conservação e uso de acordo com as orientações e treinamento recebido pelo SESMT e CIPA, assumindo o compromisso de devolvê-lo quando solicitado ou em ocasião de rescisão do meu contrato de trabalho. Estou ciente e de pleno acordo que a não utilização dos EPI's bem como o uso indevido e que venha a danificá-lo é passível de medidas disciplinares conforme NR 06 portaria 3.214 de 08/06/1978, do Ministério do Trabalho e art. 166 e 167 da CLT e nesta última situação sujeito ao desconto do valor correspondente.";
+    const splitTermo = doc.splitTextToSize(termo, 182);
+    doc.text(splitTermo, 14, 33);
+
+    let yInfo = 50;
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Nome:`, 14, yInfo); doc.setFont("helvetica", "normal"); doc.text(nomeColab.toUpperCase(), 26, yInfo);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Matrícula:`, 120, yInfo); doc.setFont("helvetica", "normal"); doc.text(matricula, 137, yInfo);
+    
+    yInfo += 5;
+    doc.setFont("helvetica", "bold");
+    doc.text(`Função:`, 14, yInfo); doc.setFont("helvetica", "normal"); doc.text(funcao.toUpperCase(), 28, yInfo);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Filial:`, 120, yInfo); doc.setFont("helvetica", "normal"); doc.text(filial, 130, yInfo);
+
+    const rows = [];
+    const trs = document.querySelectorAll("#tabela-corpo-pdf tr");
+    trs.forEach(tr => {
+        const tds = tr.querySelectorAll("td");
+        if (tds.length >= 4 && tds[0].innerText.trim() !== "") {
+            rows.push([tds[0].innerText, tds[1].innerText, tds[2].innerText, tds[3].innerText]);
+        }
+    });
+
+    doc.autoTable({
+        head: [['DATA', 'QTD', 'DESCRIÇÃO DO EPI\'S', 'C.A']],
+        body: rows,
+        startY: 60,
+        margin: { bottom: 35 },
+        theme: 'grid',
+        headStyles: { fillColor: [93, 165, 165], textColor: 255, halign: 'center', lineWidth: 0.1 },
+        styles: { fontSize: 9, cellPadding: 3, textColor: 0, lineWidth: 0.1 },
+        columnStyles: {
+            0: { cellWidth: 30, halign: 'center' },
+            1: { cellWidth: 20, halign: 'center'},
+            2: { cellWidth: 'auto' },
+            3: { cellWidth: 30, halign: 'center' }
+        },
+        didDrawPage: function (data) {
+            const pageSize = doc.internal.pageSize;
+            const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+            const dataHoje = new Date().toLocaleString('pt-BR');
+
+            doc.setFontSize(7);
+            doc.setFont("helvetica", "italic");
+            doc.text(`Relatório gerado em: ${dataHoje}`, 14, pageHeight - 10);
+
+            const totalPaginas = doc.internal.getNumberOfPages();
+            if (data.pageNumber === totalPaginas) {
+                doc.setDrawColor(0);
+                doc.line(60, pageHeight - 25, 150, pageHeight - 25);
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "bold");
+                doc.text("Assinatura do Colaborador", 105, pageHeight - 20, { align: "center" });
+            }
+        }
+    });
+
+    const pdfBlob = doc.output('blob');
+    const urlGuia = URL.createObjectURL(pdfBlob);
+    window.open(urlGuia, '_blank');
+}
+
+//FUNÇÃO QUE ABRE E ALIMENTA O MODAL DE RELATORIO DE DEVOLUÇÃO DE EPI
+
+function buscarRegistrosParaRelatorio() {
+  const matricula = document.getElementById('matricula-relatorio').value.trim();
+  
+  if (!matricula) {
+    return mostrarNotificacao("Por favor, informe a matrícula.", "warning");
+  }
+
+  exibirLoader("Buscando registros...");
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      esconderLoader();
+      
+      if (!res) {
+        mostrarNotificacao("O servidor não retornou dados. Verifique a planilha.", "error");
+        return;
+      }
+      
+      if (res.erro) {
+        mostrarNotificacao(res.erro, "error");
+        return;
+      }
+      
+      abrirModalRelatorioEPI(res);
+    })
+    .withFailureHandler(function(err) {
+      esconderLoader();
+      mostrarNotificacao("Erro na comunicação com o Google Apps Script.", "error");
+    })
+    .roteadorSolicitacoes({ 
+      qualFuncao: "buscarDadosRelatorioEpi", 
+      matricula: matricula 
+    });
+}
+
+// FUNÇÃO PARA POPULHAR MODAL EPI
+
+function abrirModalRelatorioEPI(res) {
+  document.getElementById('span-nome-epi').innerText = res.nome || "Não encontrado";
+  document.getElementById('span-matricula-epi').innerText = res.matricula || "";
+  document.getElementById('span-funcao-epi').innerText = res.funcao || "";
+
+  const tbody = document.getElementById('tabela-corpo-epi');
+  tbody.innerHTML = ""; 
+
+  res.itens.forEach(item => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${item.motivo}</td>
+      <td style="text-align: center;">${item.qtd}</td>
+      <td>${item.descricao}</td>
+      <td style="text-align: center;">${item.ca}</td>
+      <td style="text-align: center;">${item.dataEntrega}</td>
+      <td style="text-align: center;">${item.dataDevolucao}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('modal-relatorio-epi').style.display = 'flex';
+}
+
+// FUNÇÃO PARA FECHAR O MODAL E LIMPAR
+
+function fecharModalRelatorio() {
+  document.getElementById('modal-relatorio-epi').style.display = 'none';
+  document.getElementById('matricula-relatorio').value = "";
+  document.getElementById('tabela-corpo-epi').innerHTML = "";
+}
+
+//IMPRIMIR MODAL RELATORIO DE EPI
+
+function imprimirRelatorioEpi() {
+  const elemento = document.getElementById('area-impressao-epi');
+  const dataAdmVal = document.getElementById('dataAdm').value;
+  const dataDMVal = document.getElementById('dataDM').value;
+  
+  const formatarData = (data) => {
+    if(!data) return "___/___/___";
+    const [ano, mes, dia] = data.split("-");
+    return `${dia}/${mes}/${ano}`;
+  };
+
+  const infoDatasOriginal = document.querySelector('.input-modal-epi');
+  const htmlOriginal = infoDatasOriginal.innerHTML; 
+  
+  infoDatasOriginal.innerHTML = `
+    <div style="display: flex; gap: 20px;">
+      <span><strong>Data de Admissão/Promoção:</strong> ${formatarData(dataAdmVal)}</span>
+      <span><strong>Data de Demissão:</strong> ${formatarData(dataDMVal)}</span>
+    </div>
+  `;
+
+  const opcoes = {
+    margin: [10, 10, 10, 10], 
+    filename: 'Ficha_EPI.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, logging: false, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opcoes).from(elemento).toPdf().get('pdf').then(function (pdf) {
+    window.open(pdf.output('bloburl'), '_blank');
+    
+    infoDatasOriginal.innerHTML = htmlOriginal;
+    document.getElementById('dataAdm').value = dataAdmVal;
+    document.getElementById('dataDM').value = dataDMVal;
+  });
+}
+</script>

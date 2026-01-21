@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <?!= include("style") ?>
+  <title>Ativos</title>
+</head>
+
+<body>
+  <div class="div-main">
+    <div class="barra-lateral" id="barraLateral">
+      <div class="div-button botao-alterar">
+        <button id="btnAterar"><i class="bi bi-filter-left"></i></button>
+      </div>
+      <div class="div-button">
+        <button class="menu-navegacao" data-alvo="dashboard" onclick="atualizarCardsMetricas()">
+            <i class="bi bi-clipboard-data"></i
+            ><span class="nav-text">Dashboard</span>
+          </button>
+      </div>
+      <div class="div-button">
+        <button class="menu-navegacao" data-alvo="adicionar">
+            <i class="bi bi-building-add"></i
+            ><span class="nav-text">Adicionar</span>
+          </button>
+      </div>
+      <div class="div-button">
+        <button class="menu-navegacao" data-alvo="retirar">
+            <i class="bi bi-building-dash"></i
+            ><span class="nav-text">Retirar</span>
+          </button>
+      </div>
+      <div class="div-button">
+        <button class="menu-navegacao" data-alvo="Colaborador">
+            <i class="bi bi-person-plus-fill"></i
+            ><span class="nav-text">Colaborador</span>
+          </button>
+      </div>
+      <div class="div-button">
+        <button class="menu-navegacao" data-alvo="estoque" onclick="carregarTabelaEstoque()">
+            <i class="bi bi-database-add"></i
+            ><span class="nav-text">Estoque</span>
+          </button>
+      </div>
+      <div class="div-button">
+        <button class="menu-navegacao" data-alvo="retiradaepi" onclick="atualizarTabelaPendentes()">
+            <i class="bi bi-arrow-left-square"></i>
+            <span class="nav-text">Higienização</span>
+          </button>
+      </div>
+      <div class="div-button">
+        <button class="menu-navegacao" data-alvo="fardamentos" onclick="">
+            <i class="bi bi-person-standing"></i>
+            <span class="nav-text">Fardamentos</span>
+          </button>
+      </div>
+      <div class="div-button">
+        <button class="menu-navegacao" data-alvo="epigeral" onclick="">
+            <i class="bi bi-clipboard2-check"></i>
+            <span class="nav-text">Epi</span>
+          </button>
+      </div>
+      <div class="creditos">
+        <a href="https://github.com/Simao-dev" target="_blank">Desenvolvido por Simão.dev</a>
+      </div>
+
+    </div>
+    <div class="conteudo-principal">
+      <div class="form-area" id="dashboard">
+        <div class="nome-tela">
+          <h2>Dashboard</h2>
+        </div>
+        <div class="cards-metricas">
+          <div class="card1">
+            <div class="card-icon-wrapper">
+              <i class="bi bi-sort-up-alt"></i>
+            </div>
+            <div class="card-details">
+              <p class="card-title">Total de itens com estoque</p>
+              <p class="card-value" id="total-itens"></p>
+              <p class="card-period" id="periodo-selecionado"></p>
+            </div>
+            <div class="card-progress">
+              <svg class="progress-ring" width="80" height="80">
+                <circle class="progress-ring-track" stroke="#555" stroke-width="8" fill="transparent" r="30" cx="40"
+                  cy="40" />
+                <circle class="progress-ring-bar" stroke="#8e70ff" stroke-width="8" fill="transparent" r="30" cx="40"
+                  cy="40" />
+              </svg>
+              <span class="card-percentage" id="porcentagem-itens"></span>
+            </div>
+          </div>
+          <div class="card1">
+            <div class="card-icon-wrapper">
+              <i class="bi bi-reception-4"></i>
+            </div>
+            <div class="card-details">
+              <p class="card-title">Itens com estoque baixo</p>
+              <p class="card-value" id="nome-solicitante">Camisa verde</p>
+              <p class="card-period" id="chamados-solicitante">5</p>
+            </div>
+            <div class="card-progress">
+              <svg class="progress-ring" width="80" height="80">
+                <circle class="progress-ring-track" stroke="#555" stroke-width="8" fill="transparent" r="30" cx="40"
+                  cy="40" />
+                <circle class="progress-ring-bar-solicitante" stroke="#8e70ff" stroke-width="8" fill="transparent"
+                  r="30" cx="40" cy="40" />
+              </svg>
+              <span
+                  class="card-percentage"
+                  id="porcentagem-solicitante"
+                ></span>
+            </div>
+          </div>
+          <div class="card1">
+            <div class="card-icon-wrapper">
+              <i class="bi bi-clipboard-check"></i>
+            </div>
+            <div class="card-details">
+              <p class="card-title">Entregues hoje</p>
+              <p class="card-value" id="nome-tipo">Botas de seguraça</p>
+              <p class="card-period" id="chamados-do-tipo">5</p>
+            </div>
+            <div class="card-progress">
+              <svg class="progress-ring" width="80" height="80">
+                <circle class="progress-ring-track" stroke="#555" stroke-width="8" fill="transparent" r="30" cx="40"
+                  cy="40" />
+                <circle class="progress-ring-bar-tipo" stroke="#8e70ff" stroke-width="8" fill="transparent" r="30"
+                  cx="40" cy="40" />
+              </svg>
+              <span class="card-percentage" id="porcentagem-tipo"></span>
+            </div>
+          </div>
+        </div>
+        <div class="nome-tela">
+          <h2>Ultimos itens</h2>
+        </div>
+        <div class="div-ultimos-itens">
+          <table id="tabela-ultimos-itens" class="tabela-estoque">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Descrição</th>
+                <th>Quantidade</th>
+                <th>Tamanho</th>
+                <th>Colaborador</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="form-area" id="adicionar">
+        <div class="nome-tela">
+          <h2>Adicionar Itens</h2>
+        </div>
+        <input type="hidden" id="iditem" value="">
+        <div class="div-inputs">
+          <div class="item-input">
+            <label for="codigo">Código:</label>
+            <input
+                id="codigo"
+                class="adicionais"
+                type="text"
+                placeholder="123456"
+              />
+          </div>
+
+          <div class="item-input">
+            <label for="descricao">Descrição:</label>
+            <input
+                id="descricao"
+                class="adicionais"
+                type="text"
+                placeholder="Nome do item"
+              />
+          </div>
+
+          <div class="item-input">
+            <label for="quantidade">Quantidade:</label>
+            <input
+                id="quantidade"
+                class="informo"
+                type="text"
+                placeholder="45"
+              />
+          </div>
+
+          <div class="item-input">
+            <label for="tamanho">Tamanho:</label>
+            <input id="tamanho" class="informo" type="text" placeholder="P" />
+          </div>
+
+          <div class="item-input">
+            <label for="extra">C.A:</label>
+            <input id="extra" class="informo" type="text" placeholder="1223" />
+          </div>
+        </div>
+        <div class="div-botoes">
+          <button onclick="salvarItens()">Salvar</button>
+        </div>
+        <div class="nome-tela">
+          <h2>Editar Item</h2>
+        </div>
+        <div class="item-input">
+          <label for="buscaestoque">Buscar:</label>
+          <div class="search-container">
+            <input
+                  id="buscaestoque"
+                  class="adicionais"
+                  type="text"
+                  placeholder="Código"
+                  required
+                />
+            <button type="button" onclick="executarBuscaEstoque()" class="search-button">
+                <i class="bi bi-search"></i>
+              </button>
+          </div>
+        </div>
+
+      </div>
+      <div class="form-area" id="retirar">
+        <div class="nome-tela">
+          <h2>Retirada de Itens</h2>
+        </div>
+
+        <div class="div-inputs">
+          <div class="main-retirada">
+            <div class="item-input">
+              <label for="codigoretirada">Código:</label>
+              <div class="search-container">
+                <input
+                    id="codigoretirada"
+                    class="adicionais"
+                    type="text"
+                    placeholder="123456"
+                     />
+                <button type="button" class="search-button" onclick="buscarItemParaRetirada()">
+                        <i class="bi bi-search"></i>
+                    </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="item-input">
+            <label for="descricaoretirada">Descrição:</label>
+            <input
+            id="descricaoretirada"
+             class="adicionais"
+             type="text"
+             placeholder="Descrição do item"
+             />
+          </div>
+
+          <div class="item-input">
+            <label for="quantidaderetirada">Quantidade:</label>
+            <input
+            id="quantidaderetirada"
+            class="informo"
+            type="number"
+            placeholder="5"
+            />
+          </div>
+
+          <div class="item-input">
+            <label for="tamanhoretirada">Tamanho:</label>
+            <input
+            id="tamanhoretirada"
+            class="informo"
+            type="text"
+            placeholder="M"
+            />
+            <input type="hidden" id="ca-invisivel">
+          </div>
+        </div>
+
+        <div class="div-inputs">
+          <div class="main-retirada">
+            <div class="item-input">
+              <label for="colaboradorretirada">Matrícula:</label>
+              <div class="search-container">
+                <input
+                  id="colaboradorretirada"
+                  class="adicionais"
+                  type="text"
+                  placeholder="12356"
+                />
+                <button type="button" class="search-button" onclick="buscarColaboradorRetirada()">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="item-input">
+            <label for="nomeretirada">Nome do Colaborador:</label>
+            <input
+                id="nomeretirada"
+                class="adicionais"
+                type="text"
+                placeholder="Pedro"
+                />
+          </div>
+          <div class="item-input">
+            <label for="destino-registro">Destino do Registro:</label>
+            <select id="destino-registro">
+              <option value="" selected disabled>-- Escolha uma opção --</option>
+              <option value="movimentacoes">Fardamento</option>
+              <option value="registroepi">EPI</option>
+            </select>
+          </div>
+          <div class="item-input" style="display: none;">
+            <label for="motivo-registro">Motivo:</label>
+            <select id="motivo-registro">
+              <option value="" selected disabled>-- Escolha uma opção --</option>
+              <option value="admissao">Admissão/Promoção</option>
+              <option value="desgaste">Desgaste</option>
+              <option value="perda">Perda</option>
+              <option value="furto">Furto</option>
+            </select>
+          </div>
+        </div>
+
+
+        <div class="div-botoes">
+          <button id="btn-salvar-retirada" onclick="adicionarItemNaLista()">Adicionar</button>
+        </div>
+
+        <div class="lista-itens-container" id="lista-itens-container" style="display:none; margin-top: 20px;">
+          <h3>Itens a Retirar:</h3>
+          <div class="div-retirada">
+            <table class="tabela-estoque" id="tabela-itens">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Código</th>
+                  <th>Descrição</th>
+                  <th>Quantidade</th>
+                  <th>Tamanho</th>
+                  <th>Colaborador</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="lista-itens-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="div-botoes-final">
+          <button
+            id="btn-finalizar-retirada"
+             onclick="enviarRetiradaParaBackend()"
+            style="display: none">
+            Finalizar Retirada
+        </button>
+        </div>
+      </div>
+
+      <div class="form-area" id="Colaborador">
+        <div class="nome-tela">
+          <h2>Adicionar Colaborador</h2>
+        </div>
+        <div class="div-inputs">
+          <div class="item-input">
+            <label for="matriculacolaborador">Matricula:</label>
+            <input
+                id="matriculacolaborador"
+                class="adicionais"
+                type="text"
+                placeholder="Matrícula"
+                required
+              />
+          </div>
+
+          <div class="item-input">
+            <label for="nomecolaborador">Nome:</label>
+            <input
+                id="nomecolaborador"
+                class="adicionais"
+                type="text"
+                placeholder="Nome Completo"
+                required
+              />
+          </div>
+
+          <div class="item-input">
+            <label for="funcaocolaborador">Função:</label>
+            <input
+                id="funcaocolaborador"
+                class="funcao"
+                type="text"
+                placeholder="Função/cargo"
+                required
+              />
+          </div>
+          <div class="item-input">
+            <label for="idcolaborador"></label>
+            <input
+                id="idcolaborador"
+                class="informo"
+                type="hidden"
+                placeholder="Número"
+                required
+              />
+          </div>
+        </div>
+        <div class="div-botoes">
+          <button  type="button" onclick="salvarColaborador()" id="salvarColaborador">Salvar</button>
+        </div>
+        <div class="nome-tela">
+          <h2>Buscar Colaborador</h2>
+        </div>
+        <div class="item-input">
+          <label for="buscacolaborador">Buscar:</label>
+          <div class="search-container">
+            <input
+                  id="buscacolaborador"
+                  class="adicionais"
+                  type="text"
+                  placeholder="Matrícula"
+                  required
+                />
+            <button type="submit" class="search-button" onclick="executarBusca()">
+                  <i class="bi bi-search"></i>
+                </button>
+          </div>
+        </div>
+      </div>
+      <div class="form-area" id="estoque">
+        <div class="nome-tela">
+          <h2>Estoque Geral</h2>
+          <div class="item-input">
+            <input type="text" id="filtro-estoque" placeholder="🔍 Pesquisar por descrição ou código..." class="adicionais"  onkeyup="filtrarTabelaEstoque()">
+          </div>
+        </div>
+        <div class="div-tabela-estoque">
+          <table id="tabela-estoque-geral" class="tabela-estoque">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Descrição</th>
+                <th>Quantidade</th>
+                <th>Tamanho</th>
+              </tr>
+            </thead>
+            <tbody id="lista-estoque-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- alterado-->
+      <div class="form-area" id="retiradaepi">
+        <div class="nome-tela">
+          <h2>Retirada</h2>
+        </div>
+        <div class="div-inputs">
+          <div class="item-input">
+            <label for="retiradaimatricula">Matricula:</label>
+            <div class="search-container">
+              <input
+                    id="retiradaimatricula"
+                    class="adicionais"
+                    type="text"
+                    placeholder="Matricula"
+                    required
+                  />
+              <button type="button" onclick="buscarColaboradorEPI()" class="search-button">
+                    <i class="bi bi-search"></i>
+                  </button>
+            </div>
+          </div>
+
+          <div class="item-input">
+            <label for="retiradanome">Nome:</label>
+            <input
+                id="retiradanome"
+                class="adicionais"
+                type="text"
+                placeholder="Nome Completo"
+                required
+              />
+          </div>
+
+          <div class="item-input">
+            <label for="retiradafuncao">Função:</label>
+            <input
+                id="retiradafuncao"
+                class="funcao"
+                type="text"
+                placeholder="Função"
+                required
+              />
+          </div>
+          <div class="item-input">
+            <label for="codigoitem">Codigo Item:</label>
+            <div class="search-container">
+              <input
+                id="codigoitem"
+                class="funcao"
+                type="text"
+                placeholder="Código do EPI"
+                required
+              />
+              <button type="button" onclick="buscarItemEPI()" class="search-button">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </div>
+
+          <input type="hidden" id="extra-item-temp">
+          <div class="item-input">
+            <label for="idretirada">Epi:</label>
+            <input
+                id="idretirada"
+                class="informo"
+                type="text"
+                placeholder="ID"
+                required
+              />
+          </div>
+          <div class="item-input">
+            <label for="campodata">Data:</label>
+            <input
+                id="campodata"
+                class="inputdata"
+                type="text"
+                placeholder="Data retirada ex 25/12/25"
+                required
+              />
+          </div>
+        </div>
+        <div class="div-botoes">
+          <button
+              type="button"
+              onclick="registrarRetiradaEPI()"
+              id="btnSalvarEPI">Salvar
+            </button>
+        </div>
+        <div class="cont-higienizacao">
+          <div class="main itens">
+            <div class="nome-tela">
+              <h2>Devolução</h2>
+            </div>
+            <div class="item-input">
+              <label for="input-busca-devolucao">Buscar:</label>
+              <div class="search-container">
+                <input
+                      id="input-busca-devolucao"
+                      class="adicionais"
+                      type="text"
+                      placeholder="matricula"
+                      required
+                    />
+                <button type="button" onclick="buscarDadosParaDevolucao()" class="search-button">
+                    <i class="bi bi-search"></i>
+                  </button>
+              </div>
+            </div>
+          </div>
+          <div class="main itens">
+            <div class="nome-tela">
+              <h2>Relatório</h2>
+            </div>
+            <div class="item-input">
+              <label for="input-gera-relatorio">Buscar:</label>
+              <div class="search-container">
+                <input id="input-gera-relatorio" class="adicionais" type="text" placeholder="matricula" required />
+                <button type="button" onclick="gerarRelatorioFicha()" class="search-button">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lista-itens-container" id="devolucao-pedentes">
+          <h3>Pendentes de Higienização:</h3>
+          <div class="div-retirada">
+            <table class="tabela-estoque" id="devolucao-pendentes">
+              <thead>
+                <tr>
+                  <th>Matricula</th>
+                  <th>Nome</th>
+                  <th>Função</th>
+                  <th>Epi</th>
+                  <th>Data retirada</th>
+                  <th>Data Devolução</th>
+                </tr>
+              </thead>
+              <tbody id="lista-devolucao-pendentes"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="form-area" id="fardamentos">
+        <div class="nome-tela">
+          <h2>Devolução de fardamentos</h2>
+        </div>
+        <div class="div-inputs">
+          <div class="item-input">
+            <label for="matriculaFardamentos">Matricula:</label>
+            <div class="search-container">
+              <input
+                    id="matriculaFardamentos"
+                    class="adicionais"
+                    type="text"
+                    placeholder="Código"
+                    required
+                  />
+              <button type="button" class="search-button" onclick="buscarColaboradorDevolucao()">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+          </div>
+          <div class="item-input">
+            <label for="nomeFardamentos">Nome:</label>
+            <input
+                id="nomeFardamentos"
+                class="adicionais"
+                type="text"
+                placeholder="Nome Completo"
+                required
+              />
+          </div>
+        </div>
+        <div class="nome-tela">
+          <h2>Acompanhamento de fardamentos</h2>
+        </div>
+        <div class="div-inputs">
+          <div class="item-input">
+            <label for="buscaFardamentos">Matricula:</label>
+            <div class="search-container">
+              <input
+                    id="buscaFardamentos"
+                    class="adicionais"
+                    type="text"
+                    placeholder="Matricula"
+                    required
+                  />
+              <button type="button" class="search-button" onclick="buscarDadosUniformes()">
+                    <i class="bi bi-search"></i>
+                  </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-area" id="epigeral">
+        <div class="nome-tela">
+          <h2>Devolução de EPI</h2>
+        </div>
+        <div class="item-input">
+          <label for="matricula-devolucao">Matrícula:</label>
+          <div class="search-container">
+            <input id="matricula-devolucao" class="adicionais" type="text" placeholder="Matrícula" required />
+            <button type="button" onclick="buscarRegistrosParaDevolucao()" class="search-button">
+            <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </div>
+        <div class="nome-tela">
+          <h2>Relatorio de EPI</h2>
+        </div>
+        <div class="item-input">
+          <label for="matricula-relatorio">Matrícula:</label>
+          <div class="search-container">
+            <input id="matricula-relatorio" class="adicionais" type="text" placeholder="Matrícula" required />
+            <button type="button" onclick="buscarRegistrosParaRelatorio()" class="search-button">
+            <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="toast-container">
+
+      </div>
+
+
+      <div id="loader-container" style="display: none;">
+        <div class="spinner"></div>
+        <p id="loader-text">Aguarde...</p>
+      </div>
+
+      <!--MODAL EDITAR COLABORADOR-->
+
+      <div id="modal-edicao" class="modal-container" style="display:none;">
+        <div class="modal-content-colaborador">
+          <h3>Editar Colaborador</h3>
+          <input type="hidden" id="edit-id" class="adicionais">
+
+          <label>Matrícula:</label>
+          <input type="text" id="edit-matricula" readonly class="adicionais">
+
+          <label>Nome:</label>
+          <input type="text" id="edit-nome" class="adicionais">
+
+          <label>Função:</label>
+          <input type="text" id="edit-funcao" class="adicionais">
+
+          <label></label>
+          <input type="hidden" id="edit-idcolaborador" class="adicionais">
+
+          <div class="modal-buttons">
+            <button onclick="salvarEdicao()" class="btn-save">Salvar Alterações</button>
+            <button onclick="fecharModal()" class="btn-cancel">Cancelar</button>
+          </div>
+        </div>
+      </div>
+      <div id="modal-edicao-item" class="modal-container" style="display:none;">
+        <div class="modal-content">
+          <h3>Editar Item do Estoque</h3>
+
+          <input type="hidden" id="edit-iditem">
+
+          <label>Código:</label>
+          <input type="text" id="edit-codigo" readonly class="adicionais">
+
+          <label>Descrição:</label>
+          <input type="text" id="edit-descricao" class="adicionais">
+
+          <label>Quantidade:</label>
+          <input type="number" id="edit-quantidade" class="adicionais">
+
+          <label>Tamanho:</label>
+          <input type="text" id="edit-tamanho" class="adicionais">
+
+          <label>C.A:</label>
+          <input type="text" id="edit-extra" class="adicionais">
+
+          <div class="modal-buttons">
+            <button onclick="salvarItensEdicao()" class="btn-save">Salvar Alterações</button>
+            <button onclick="fecharModalItem()" class="btn-cancel">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <!--NOVO MODAL DE HIGENIZAÇÃO DE EPI-->
+      <div id="modal-devolucao-multiplo" class="modal-container" style="display:none;">
+        <div class="modal-content-devolucao-larga">
+          <div class="header-modal">
+            <h3 id="dev-nome-colaborador">Colaborador: CARREGANDO...</h3>
+            <p>Confirme os dados para cada item que está sendo devolvido hoje:</p>
+          </div>
+
+          <div class="row-header">
+            <span>Item (Descrição)</span>
+            <span>Nº EPI Registrado</span>
+            <span>Confime o N°</span>
+            <span>Data Devolução</span>
+          </div>
+
+          <div id="lista-itens-devolucao-epi" class="lista-itens-container"></div>
+
+          <div class="modal-buttons">
+            <button onclick="salvarTodasDevolucoes()" class="btn-save">Confirmar Devoluções</button>
+            <button onclick="fecharModalMultiplo()" class="btn-cancel">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <!--MODAL DEVOLUÇÃO DE FARDAMENTOS-->
+      <div id="modal-fardamentos-lista" class="modal-overlay" style="display:none;">
+        <div class="modal-uniformes">
+          <div class="uniformes-nome">
+            <h3 id="nome-cabecalho-modal">Itens Pendentes</h3>
+          </div>
+
+          <div class="main-logo">
+            <p>Selecione a data de devolução para cada item que está sendo entregue hoje:</p>
+          </div>
+
+          <div id="lista-itens-render" class="lista-itens-container-modal">
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" onclick="fecharModalFardamento()" class="btn-cancel">
+                Cancelar
+                    </button>
+            <button type="button" onclick="processarEnvioDevolucoes()" class="btn-save">
+                Confirmar Devoluções
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="modal-fardamentos-view" class="modal-overlay" style="display: none;">
+        <div class="modal-uniformes">
+          <div class="uniformes-nome">
+            <h3>Controle de Uniformes</h3>
+          </div>
+          <div class="main-logo">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAagAAAB3CAMAAABhcyS8AAABTVBMVEX///8AnmH4YwIAm1uTLQAAmVd/w6IAl1Ov18L/o3r7/v3i8eqOyayLKAAspW6k0rr4XgD8ZQLOqqKOGwDARgH/pHttupQyqHP/n3MAlU+83837ez2UHgD4WACOpYf5biR8jkymOAH91Mb3UAD+7efUnIvjWAGsMgClWkfUUQP9jltetYr7gEX+lmeJAADx+fXO59tLr4D8hk/6dDCazrT6pofL5dhluJCGxaYAj0C228jZ7ONFrXz+mWz94NX5aBX+8+6cMgCrLwDLqaL8xK/khFvBZEL8uaDBUiL7rpCUMhDm1dG8hnn8zbzbVAHIm5CeRiqjUTmuZlOxHwCZnH+evqXMaw2BUCSJiER+uJG5fGyaeCZNlVViWBm/tZRpbTuFOQC1pXrmv7jjaxdGdTRdikNMhk12WCLOdy59oW6sRRvgzMecDgDOPADsTgC5tpyrAAAQzElEQVR4nO1d+UPjxhW2LAv5wFfBhwwuBVM2iwHbYLDX5tqGlmyS3SZp0jRHr7RN0ybt//9j55A0by5ZongRy3y/IY1GM++bee/NNyOcySwB2Sh0f7aMVxrcAfu1CJ7qv3r/odtnQHHTzWZrOtTX18yMSgeuu9naRluHX5cNUSnBQS17VdCh8RtDVEpwiybUYaFwsaHGB4aodGC3l60dFNqNLXVCUV/PGaJSgRPs+NqFY03iZ4hKCV4hx3eBHJ8uQTdEpQOXyPEdowl1pV1FGaJSAUTQVqNdONCueA1RqcApcnztQuFQr0wYotIA7Pj2kePT0mSISgcQESeNdmMjQuozRKUAONVDji9akjVEPTh2iOMrtCNoMkSlAbVsbQM5vhNDVLqxTyWJSMdniHp4vKZabDuaJ0PUQwNvQhEtNponQ9RD4zhaizVEpQS3C7RYQ1Q6sLtIizVEpQMbtQVarCEqFXi1UIs1RKUBu2ottm6IShm2lFpsfU/FlCHq4XDaVWmx9b1tQ1SqcKnWYuu5dUNUqpBVarH19bIhKlUodFVabH2vXP7AEJUi4E2oQ1mSqOdyH+50DVHpQU2pxSLHd/SRISpFOFRqscjxrX2cMUSlB697ai02l8tlDFHpAd6EUmixiIyjjwxRKcKxUoutvymv/TZjiEoPbjRaLMr48G1DVEqAHZ9Ki31GHJ8hKjXYqBEtVpQkfMdniEoLbpVaLHZ8n9AChqhUYFejxW7njnZpCUNUKnBSU2qxb9i31IaoNOBVV308LJf7NChiiEoBLnvKc7HY8V0HZQxRKcCVWot9Xj5iLBiilBhUWiGswZJf1qCOTzoeVl57jxUyRCkxcawAznTJ77qkWqwoSXCOjxBVl/HUiTp74YZwlv2yrFqLRY7vO1AKEbUt4+UTJ6oEsGzHd0G0WPlT3fLaZ7DYTvdlToWnTdRbBN59V2ixyPFt8uV+t7apwlHaiBoMO/lqvjNf9gCPjxJp0awzL8KL+WSY1YgWK0kSz8ubn89gwS9+rsEXfH0R7QXFOsFF7h1KVFkNVXC5qHpFMd+3PdfBcD2rOc9kRo5tO+ewzOqkGWDS4R8vsVsM0/FsrnwZwgA80FcWGq6e4/DlN6myMgxuVJxEsH+v1GKR48t9afElLQ1srphXVTWXoOWGpdzQdN6iFrqtsIIxKPxCMWFKTY9rpu01xzgpc8ag0NyzQ7irfAVV11YAW7g1Vk7QicOKeXKJ0tRGNXLGciv+4LAc1bt0sP6g/h8F2PElqog1d1Vqro+8CxocWH8ILyrBrDzwwGW3JNY/mHjSYKJWcuegWAXeFhrbjxiNXlOeMUOuRSJRqgbhciNS0XwlCb7qqrVYlPF9nqiiEFOdlyg6sLUV/+qq1jRhv0JnMYJlJaI6Lrhtc+MY5s1V2AxbWPlEjhrbmWcE8A0VWrTKaLI5j2RbOhvpcUy1WOlT3fLa14nrWoAmT4l/9dwO+8I5LfZHaOUOZ0ZXsNoKG9zIvTRXJlbIiD1hxQZcJXaTq2NoWy43GHB0AX97AhVjbuzxLSpV2PvdZr6T77M3261MQtyqtdj6S3zs6H7BeQnUVnq1SK/aXmuSB5Nr1GyOfJPZ/aAG7nkw0QhGzGbuiNpzFljGybNyvHODFPoNOmcFWoPBYF614BNc2QHfJa5FZ4wWZ0R9InD9XNCMgV3NuVh83jJZTYtRsfhe0atnxL5uH3dlHFqEjM0i9XROkJxMHb6CM1g75Ck0Qt6/CHzSmTBc+hkRjCg/gBVBy3kDCxENtqjD3uNMFOXdZMbbqBEtVvxUl5y3vGcQLwE65tHLU3zJz73OWd/I39RLBVYuka4Djwgz675acAtKsyuWgJHUUDbsA8Nz+Q4oeSZENNAi6D6Ym+uAVs5QCHNjwvmmptRiseOz4lYiQ4q4odFtRoXl0XiKR6vvf4ph54JxToay7yN9Glmgc8CCbQzcfwW8dUJKg0C0SkzFmmFzCyyBlXDUg/EFEwZawwgaH/Y26Ch7ogSauZJZmEWF+Lar1mLXy5vfx65EglpCJrPem7NiNJclXt6hnJ2F4y3wdvihwMok4Dh55h5B4JmD8evBcUKjHjCgZwnNgLSCRzDscLYxLuCsIa7YXp0qWtQCGd4Kqxvyd46yn5gj376qK7XYvfLmH+8+nzyPD/IUJDSgiQKIIgNt5jC/z3ocDNsRszLN7Ssgz3LYwhoEET47oKk4W4iSqMc1g88OMjBEsReA2MIuUlfsgGaH96pwQoHFVYn3ocWYOO0qtVjk+D6MW4UKCpp8L4GcgEgU9mRBV5i5A29XYR0lLg8FDbYKYnE9r3Y0IVHhrKH5ParRkl4VgPlfkG23WHn2VsIo4oZNweBeEbSHy//nmmAXjUuNFosyvt3YlcQECQ3YCTAyqBk8BN+OLNcNOld8ge7SDhHnhn1Rni1OQlEB9N7iY84YK0Ju6HyoI5xyzRBaCuI94xCkm6F783N/zlf6LYLpKRexQeWyz9Uiq5Yk9oLzlvcI30sU4diki44BhtiLMKbgm37OQUJcifpK3yxBLJxBO/KScIdoJYEvXiEFcUapJ2qFmT2cCzC0BDGqSKWpDlz0+uEITiieD7g+ltNNDdpqLRY5vk8XP5wQgZfgIsCZUIiZSBY3idMnljsTzcJFbsuN0Gb84YKnREv7gIrzMzhDSqC1JGeUiMrDgcOtuyZcjlGarsbAn9TnYnHG91Wc5/WQ19yhl+CWSsIGQ1SA9xdU2KYsew5GfAmkfIr1K0OLDXHWDGFQAK2B3YFypK9n0TyTBEQWNf0WgTWIIP/BeqqZShzR26lRxyfyhDK+P99JMwfquciU7yXIDGKyquCkgL1hQktBRiIdnCweB6RAf+Lot1j8lMNvBrMkTxSYDcxpgew8XOHZITEgavYFri1+zMGkD8WuOPtR1g9qLRY5vr/Yix+PhETUis16OFEtgwQTSXPNX+YLnQ2WOdwAVi62CWh+7zejL60EfLD1NNPVQSIYjASaf9vEbYKoOeL/Fscc1O1RplKqLsZfNVrsenktH+PxSAgEBKvRUR9hwqK4OPib+hAV2BQD9PVcMqMVcQzIr19shkAtEOPCGApzNZr9++lCZYIrE2WOKXRw3JgDQ0r2Gmp01VrsXnkJ5x+CWE/8IuiDMPGAZi1UwO8lWEI5KMRFhKhQfBOawWvwYKHDsgyw3PW3JybqLlFvCZVabsxBn+iqVAEZx0SLlf5tYj1Xfm/xwwmRF5TLsM/83iqIPYIEJewlAND6tTkWh4qmDl6DB84pTJ/h+2lgHepaVJHexFki8SrqRn0uFi91r2NVkABFzXQQ+WAmcoW8ndvW5UBuc55GeJQcORny1QvgH2GzgXEuRJaMrMDzLYLbzNwMB8sIN+IEEMO1RotFS93vFj+dEL6XCA5nA5mI99LMRB6/sqGyj82OdwtWg/vGQmZATrGQ6mh+b1fkSvjkE3i+MHZBVklcpa5Y1SISIiGvcDDCZQSZUOPKAvytpvx/sfVc7svWomdjoAWtNWTrDQKQIvF7q8xEwsaDODTBWhWOBBXHTHz3h0F4p6lOPkG8C/WjmeiwqCtkuRAQIjyRWOiKwYiiuvWibY5v1Odi8VI3/g5JBLhtjopwpSMsOmQTCXGG6mZgtcMWNZ7Yf0EPIukmGSN0W9djXo6pIFzyCWS7UD8CPaM7KNQVgyAD1sh4oIDcDlYOQp1DK59Eb3N8S/9HgSRJoKXu3527724wvAApqe8lVITYnNjFMjs+Hyp5YocnQhoPZQNeD2J7ktLIkBVvgpY80cA4oPvQvgIPQhuYUQNuEHAJE2t3uLVZisRWTf0TNrm1z6IfjAtp/8XtiFdIczkXx0zkZbjrljB8gR3oNJsphDhmGWK6JhVjQcOA7AOTT8HkGW7r2CFEU5mF89vg/fgpqL+zPQ5whsKOddT6VVetxT4rby5+OCEG0kiG+ibcCYKBFtYwER0fp/4QT8RlzyDgEHZcfGHqivegRg5aB0IUHRrFJjxKRN5WkUcTOAhB5hnU2sMOgoqkg6MqXPbUWuyb8tGPcZ5PgGI+WAx25uF5fbhXyibaHPp1JhUMW9QG0BvOpfHKpe+B7xuck5PMzcG841dinw/nQdUD8ASb7/MWCFGl+byzAk4aupNMcT4f+1fs8Xwe2Buk73YL93MVXPBTW6D5x/wo8UqpxWLHd8/nLZtA7XFcck4cHyPnTje2Jv15xnZslz9Y6dpOBScA7LJLBcSOh2oAJW2r369yBybQoEBUFc+a5IwqclaeGxrbdskmJMrZuUpQ6xwPTWnUCrgCwmoVCDb4QP3MY11CleEZuuI63AFNG/09zcCjUv2z0nzGjl66YAJHfM1RbWi02O3cZlX/WDLQhYnFAXuSuSxR2B7n9Fj3VrmYbPlurillpbaH5sMqrBgZzvFN7jWFg+0kHikEKRRxtAti+hZyopN/PYliisJo+g8AU2hUMMYdG2p/evXc/odGi31T3vz+/xXNmXqOU7QSb6GpxkIjtYWwrxNKyuRTc2Fft6IkG7tW/mA7caEjRdF85McBbpO6TL6lFamX/ksy+OioSjdzhE9H9F9zWFmlFosc3+Y/Y2w06bpiCftRZNxyn6+QZPZcrgCl3SNVaz2cXsALbjOTEXwcfTNNHWeOQDeyLvlWoeJyQwjb0FO8bpBRXMUjF3/P1PHj3vAFVxcee4qPdGhumOlU+K9tbMdriXtl+q85ftBosdvlD+N8pvGvX2jwlfw1x5i7hL9XKdqyiGGVMk3Vm1BAGvJX8FyoWnIFwbmfMYpj1DLYWMgo1LqzDsSZzjqZkuLidJznvhAscXV1yOau4rFggTWftjz6/ZqLguOkGivXo9jRaLHPYx40P91qFBTY7937oaW7oJRf6bcqVuV8stpJyzehpSEZH6WEH9motVj8hc0vYz1/uoVoltA47F3eoQ8GWuxTLVakCTu+eBUgogobWxKuuoao+8SN5lzs89jnLTFRqt+mNETdJ67VWmx8x2eIejs4VmuxyPF9ErcKLVGpSCbeEdxotNj4js/MqLcB5PiyKJGQMr5EB80PTzRE7Syx5U8MGzWUmSsyvpfxHV8mk9URdbu8hj8xnHbxP9GRHd9e+Si+29rtbRSkr30xagdLbPqTwuseWUFJ/y+2vl7+d/xaXnWPCwXlD76mQ5p4/Njp1Q4aigCVrT9L8PH7dbd2qPll3trxElv/dHCD5pOSJzyjPlv8vI+t2lVDnpR+lDpdYvufCi565Ac3VHMBx6iYRy4vr2p4h0RJE2bqcLmdeOexe9rtnrTl35YMmNouH30dI8C8Pu6R9bL+t+Nr3VOzmkqMXYTLnde3F9le92q/USg0dBbG39kcffLx+z9+dK2s6XLn5tXFVq/brZ0ohXeOqu7B6e3rHZNYxEePoNvtbh0c4i2kiy2thet767ny2traT0rBbxfXkt06OdhvI7bVsxJyhcj6z/1/AfzuorZRaGPQDaO29E99earqe8+fbT/TEBVUUmgc6tkGeLmED3feXSCiAvO2908W27f+XE8UqeZi/+AqDk0oO8kZouIDE7W/gXCCcrU49o0i6nDrKhurFkNUYmCiov1dAqIWRiZD1J1BiIpvXkPUQ8EQ9UhgiHokMEQ9EhiiHgkMUY8EhqhHAkPUI4Eh6pEgKVHZCKLaSYjKGqISoXZSXisnwUsdUd0PklVUzhmiEqCu/i1CPbRE/becsCZDVBKsJzWvlqifEvNkiIqL/wH7fA36NR+4JwAAAABJRU5ErkJggg=="
+                    alt="Logo Atacadão"
+                    style="width: 150px; height: auto; display: block; margin: 0 auto 10px;">
+
+            <p>
+              Declaro ter recebido os uniformes abaixo especificados, comprometendo-me em usá-los de acordo com as
+              normas da Empresa.
+            </p>
+          </div>
+          <div class="input-uniformes">
+            <input type="text" id="nome-colaborador" readonly>
+          </div>
+          <div class="tabela-container-scroll">
+            <table class="tabela-uniformes" id="">
+              <thead>
+                <tr>
+                  <th>Data Retirada</th>
+                  <th>quantidade</th>
+                  <th>Descrição</th>
+                  <th>Tamanho</th>
+                  <th>Data devolução</th>
+                </tr>
+              </thead>
+              <tbody id="corpo-tabela-uniformes">
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer no-print">
+            <button type="button" onclick="baixarPDFUniformes()" class="btn-imprimir btn-save">
+                      <i class="bi bi-printer"></i> Imprimir
+            </button>
+            <button type="button" onclick="fecharModalFardamentoView()" class="btn-cancel" >Fechar</button>
+          </div>
+        </div>
+      </div>
+
+      <!--MODAL DEVOLUÇÃO DE EPI-->
+      <div id="modal-epi-devolucao" class="modal-overlay" style="display:none;">
+        <div class="modal-uniformes">
+          <div class="uniformes-nome">
+            <h3 id="epi-dev-cabecalho">Itens Pendentes (EPI)</h3>
+          </div>
+
+          <div class="main-logo">
+            <p>Selecione a data de devolução para os EPIs abaixo:</p>
+          </div>
+
+          <div id="epi-dev-lista-render" class="lista-itens-container-modal">
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" onclick="fecharModalEPIDevolucao()" class="btn-cancel">
+                Cancelar
+            </button>
+            <button type="button" onclick="enviarLoteDevolucaoEPI()" class="btn-save">
+                Confirmar Devoluções
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!--MODAL RELATORIO HIGIENIZAÇÃO -->
+      <div id="modal-ficha-pdf" class="modal-container" style="display:none;">
+        <div class="modal-content-ficha">
+
+          <div id="area-impressao" class="folha-a4">
+            <table class="tabela-cabecalho" style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+              <tr>
+                <td class="td-logo" style="border: 1px solid black; width: 30%; text-align: center; padding: 10px;">
+                  <img src="data:image/png;base64,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" style="max-width: 120px;">
+                </td>
+                <td class="td-titulo"
+                  style="border: 1px solid black; width: 70%; text-align: center; font-weight: bold;">
+                  FICHA DE CONTROLE DE HIGIENIZAÇÃO DE EPI
+                </td>
+              </tr>
+            </table>
+
+            <div class="termo-box" style="border: 1px solid black; padding: 8px; font-size: 10px; margin-bottom: 10px;">
+              <strong>Termo de Responsabilidade:</strong>Declaro ter recebido do Atacadão S.A., os equipamentos de
+              proteção individual (EPI)
+              registrados nesta ficha, em perfeitas condições de uso, os quais desde já me
+              comprometo a usá-los na execução de minhas tarefas, zelando pela sua perfeita guarda
+              conservação e uso de acordo com as orientações e treinamento recebido pelo SESMT e
+              CIPA, assumindo o compromisso de devolvê-lo quando solicitado ou em ocasião de
+              rescisão do meu contrato de trabalho.
+              Estou ciente e de pleno acordo que a não utilização dos EPI's bem como o uso indevido e
+              que venha a danificá-lo é passível de medidas disciplinares conforme NR 06 portaria
+              3.214 de 08/06/1978, do Ministério do Trabalho e art. 166 e 167 da CLT e nesta última
+              situação sujeito ao desconto do valor correspondente.
+
+            </div>
+
+            <div class="info-colaborador"
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px; font-size: 12px;">
+              <div><strong>Nome:</strong> <span id="span-nome"></span> </div>
+              <div><strong>Matrícula:</strong> <span id="span-matricula"></span> </div>
+              <div><strong>Função:</strong> <span id="span-funcao"></span> </div>
+              <div><strong>Filial:</strong> <span>Juazeiro do norte - Ce</span> </div>
+            </div>
+
+            <div class="tabela-container-scroll">
+              <table class="tabela-uniformes">
+                <thead>
+                  <tr>
+                    <th>DATA</th>
+                    <th>QTD</th>
+                    <th>DESCRIÇÃO DO EPI'S</th>
+                    <th>C.A</th>
+                  </tr>
+                </thead>
+                <tbody id="tabela-corpo-pdf">
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="modal-acoes no-print">
+            <button onclick="baixarPDFComBiblioteca()" class="btn-save">Imprimir</button>
+            <button onclick="fecharModalFicha()" class="btn-cancel">Fechar</button>
+          </div>
+        </div>
+      </div>
+
+      <!--MODAL RELATORIO DE EPI-->
+      <div id="modal-relatorio-epi" class="modal-container" style="display: none">
+        <div class="modal-content-ficha">
+
+          <div id="area-impressao-epi" class="folha-a4">
+            <table class="tabela-cabecalho">
+              <tr>
+                <td class="td-logo">
+                  <img src="data:image/png;base64,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" style="max-width: 120px;">
+                </td>
+                <td class="td-titulo">
+                  FICHA DE CONTROLE DE ENTREGA DE EPI
+                </td>
+              </tr>
+            </table>
+
+            <div class="info-colaborador">
+              <div><strong>Nome:</strong> <span id="span-nome-epi"></span> </div>
+              <div><strong>Matrícula:</strong> <span id="span-matricula-epi"></span> </div>
+              <div><strong>Função:</strong> <span id="span-funcao-epi"></span> </div>
+              <div><strong>Filial:</strong> <span>Juazeiro do norte - Ce</span> </div>
+              <div class="input-modal-epi">
+                <div class="modal-epi-filho">
+                  <span><strong>Data de Admissão/Promoção:</strong></span>
+                  <input id="dataAdm" type="date">
+                </div>
+                <div class="modal-epi-filho">
+                  <span><strong>Data de Demissão:</strong></span>
+                  <input id="dataDM" type="date">
+                </div>
+              </div>
+            </div>
+
+            <div class="termo-box">
+              <strong>Termo de Responsabilidade:</strong>Declaro ter recebido ATACADÃO S.A., os equipamentos de proteção
+              individual (EPI) registrados nesta ficha, em
+              perfeitas condições de uso, os quais desde já me comprometo sempre a usá-los na execução de minhas
+              tarefas,
+              zelando pela sua perfeita guarda, conservação e uso de acordo com as orientações e treinamentos recebidos,
+              assumindo o compromisso de devolvê-lo quando solicitado ou em ocasião de rescisão do meu contrato de
+              trabalho.
+              Estou ciente e de pleno acordo que a não utilização dos EPI´s bem como o uso indevido e que venha a
+              danificá-lo é passível
+              de medidas disciplinares conforme previsto na NR 06, portaria 3.214 de 08/06/78, do Ministério do Trabalho
+              e Art 166 e 167
+              CLT e nesta última situação sujeito ao desconto do valor correspondente.
+
+            </div>
+            <div class="info-colaborador">
+              <div><strong>Assinatura:_____________________________________________________________________</strong>
+                <span></span> </div>
+              <div><strong>Data:______________</strong> <span></span> </div>
+            </div>
+
+            <div class="tabela-container-scroll">
+              <table class="tabela-uniformes">
+                <thead>
+                  <tr>
+                    <th>Motivo</th>
+                    <th>Qtde</th>
+                    <th>Descrição do EPi</th>
+                    <th>C.A</th>
+                    <th>Data Entrega</th>
+                    <th>Data Devolução</th>
+                  </tr>
+                </thead>
+                <tbody id="tabela-corpo-epi">
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="modal-acoes no-print">
+            <button onclick="imprimirRelatorioEpi()" class="btn-save">Imprimir</button>
+            <button onclick="fecharModalRelatorio()" class="btn-cancel">Fechar</button>
+          </div>
+        </div>
+      </div>
+
+      <?!= include("javaScript") ?>
+</body>
+
+</html>
