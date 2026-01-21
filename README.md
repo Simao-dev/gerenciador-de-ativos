@@ -51,7 +51,7 @@ Este projeto é um sistema de controle de estoque e movimentação de ativos des
 
 #### 👥 Colaboradores
 * **Adicionar:** Registro de Matrícula, Nome e Função.
-* **Buscar:** Consulta e edição de dados de colaboradores existentes através da matrícula.
+* **Buscar:** Consulta e edita os dados de colaboradores existentes através da matrícula.
 
 #### 🧹 Higienização de EPIs
 * **Retirada/Devolução:** Controle específico de EPIs que saem para limpeza. A devolução exige a validação do **Nº do EPI Registrado**.
