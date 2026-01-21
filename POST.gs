@@ -469,47 +469,6 @@ function registrarRetiradaEstoque(itens) {
   }
 }
 
-/*function finalizarRetirada() {
-    if (itensParaRetirar.length === 0) {
-        mostrarNotificacao("A lista está vazia!", "error");
-        return;
-    }
-
-    exibirLoader("Salvando dados na planilha...");
-
-    // Chamada para o Backend enviando a lista completa
-    google.script.run
-        .withSuccessHandler(function(res) {
-            esconderLoader();
-            mostrarNotificacao(res, "success");
-            itensParaRetirar = []; // Limpa a lista após o sucesso
-            renderizarLista();
-            // Agora sim, limpamos o destino e os dados do colaborador
-            document.getElementById('destino-registro').value = "";
-            document.getElementById('colaboradorretirada').value = "";
-            document.getElementById('nomeretirada').value = "";
-        })
-        .registrarRetiradaEstoque(itensParaRetirar);
-}*/
-
-//BUSCAR COLABORADOR 
-
-/*function buscarColaborador(matricula) {
-  const ss = SpreadsheetApp.openById("");
-  const sheet = ss.getSheetByName("Colaboradores"); 
-  const dados = sheet.getDataRange().getValues();
-
-  for (let i = 1; i < dados.length; i++) {
-    if (dados[i][0].toString() === matricula.toString()) { 
-      return {
-        nome: dados[i][1], // Nome na Coluna B (índice 1)
-        
-      };
-    }
-  }
-  return "ERRO: Colaborador não encontrado.";
-}*/
-
 //BUSCA ESTOQUE PARA ALIMENTAR TABELA 
 
 function buscarDadosEstoque() {
