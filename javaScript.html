@@ -219,19 +219,21 @@ function atualizarCardsMetricas() {
     .withSuccessHandler(function(res) {
       if (!res || res.erro) return console.error(res.erro);
 
-      // Card 1 Itens com estoque
+      // Card 1: Itens com estoque
       document.getElementById('total-itens').innerText = res.totalDisponivel;
       document.getElementById('periodo-selecionado').innerText = res.dataHoje;
       setProgressoCard('--percentage-total', res.percDisponivel, 'porcentagem-itens');
 
-      // Card 2 Estoque Baixo 
+      // Card 2: Estoque Baixo 
       document.getElementById('nome-solicitante').innerText = res.nomeCritico; 
       document.getElementById('chamados-solicitante').innerText = res.totalCritico; 
       setProgressoCard('--percentage-solicitante', res.percCritico, 'porcentagem-solicitante');
 
-      // Card 3 Entregues Hoje 
+      // Card 3: Entregues Hoje
       document.getElementById('nome-tipo').innerText = res.entregasNome;
       document.getElementById('chamados-do-tipo').innerText = res.entregasQtd;
+      
+      // Lógica de progresso: se houver entregas hoje, o círculo completa
       let percEntrega = res.entregasQtd > 0 ? 100 : 0; 
       setProgressoCard('--percentage-tipo', percEntrega, 'porcentagem-tipo');
     })
@@ -317,26 +319,40 @@ function buscarItemParaRetirada() {
     google.script.run
         .withSuccessHandler(function(resultado) {
             esconderLoader();
+            
+            // Verifica se o retorno é uma string de erro (Não encontrado ou Sem Estoque)
             if (typeof resultado === "string" && resultado.includes("ERRO")) {
                 mostrarNotificacao(resultado, "error");
-            } else {
                 
+                // Limpa os campos para evitar confusão
+                inputDescricao.value = "";
+                inputTamanho.value = "";
+                if (inputCA) inputCA.value = "";
+                
+                inputCodigo.focus();
+                inputCodigo.select();
+            } else {
+                // Preenche os campos com as informações do item
                 inputDescricao.value = resultado.descricao;
                 inputTamanho.value = resultado.tamanho;
                 
                 if (inputCA) inputCA.value = resultado.extra || "";
                 
+                // Bloqueia campos automáticos para edição
                 inputDescricao.readOnly = true;
                 inputTamanho.readOnly = true;
                 inputDescricao.style.backgroundColor = "#f0f0f0";
                 inputTamanho.style.backgroundColor = "#f0f0f0";
+                
+                // Exibe uma notificação curta do saldo disponível 
+                console.log("Estoque disponível: " + resultado.quantidadeEstoque);
                 
                 inputQuantidade.focus();
             }
         })
         .withFailureHandler(function(erro) {
             esconderLoader();
-            mostrarNotificacao("Erro na busca: " + erro, "error");
+            mostrarNotificacao("Erro técnico na busca: " + erro, "error");
         })
         .roteadorSolicitacoes({ qualFuncao: "buscarItem", codigo: codigo });
 }
@@ -358,17 +374,30 @@ function buscarColaboradorRetirada() {
   google.script.run
     .withSuccessHandler(function(resultado) {
       esconderLoader();
+
+      // Verifica se o resultado é nulo (não encontrado)
+      if (!resultado) {
+        mostrarNotificacao("Matrícula não encontrada", "error");
+        inputNome.value = "";
+        inputNome.readOnly = false;
+        inputNome.style.backgroundColor = ""; 
+        return; 
+      }
+
+      // Verifica se houve um erro de string retornado do servidor
       if (typeof resultado === "string" && resultado.includes("ERRO")) {
         mostrarNotificacao(resultado, "error");
         inputNome.value = "";
         inputNome.readOnly = false;
-      } else {
-        
+        inputNome.style.backgroundColor = "";
+      } 
+      // Sucesso: Colaborador encontrado
+      else {
         inputNome.value = resultado.nome; 
         inputNome.readOnly = true;
         inputNome.style.backgroundColor = "#f0f0f0";
         
-        // Foca no próximo campo lógico, código do produto
+        // Foca no próximo campo lógico
         document.getElementById('codigoretirada').focus();
       }
     })
@@ -679,7 +708,10 @@ function executarBusca() {
     .withSuccessHandler(function(resultado) {
       esconderLoader();
       
-      if (typeof resultado === "string" && resultado.includes("ERRO")) {
+      // VERIFICAÇÃO CORRIGIDA:
+      if (!resultado) {
+        mostrarNotificacao("Colaborador não encontrado", "error");
+      } else if (typeof resultado === "string" && resultado.includes("ERRO")) {
         mostrarNotificacao(resultado, "error");
       } else {
         abrirModalEdicao(resultado); 
@@ -791,17 +823,18 @@ function salvarItens() {
 // FUNÇÃO BUSCA DE ESTOQUE
 
 function executarBuscaEstoque() {
-  const codigo = document.getElementById("buscaestoque").value;
+  const codigo = document.getElementById("buscaestoque").value.trim();
   
   if (!codigo) {
     mostrarNotificacao("Digite um código para buscar", "error");
     return;
   }
 
-  exibirLoader("Buscando item no estoque...");
+  exibirLoader("Buscando item para edição...");
 
+  // Alterado: qualFuncao agora aponta para a nova função administrativa
   const dados = {
-    qualFuncao: "buscarItem", 
+    qualFuncao: "buscarItemEdicao", 
     codigo: codigo
   };
 
@@ -812,8 +845,11 @@ function executarBuscaEstoque() {
       if (typeof resultado === "string" && resultado.includes("ERRO")) {
         mostrarNotificacao(resultado, "error");
       } else {
+        // Abre o modal de edição 
         abrirModalEdicaoItem(resultado);
-        limparFormulario(); 
+        
+        // Limpa o campo de busca após encontrar
+        document.getElementById("buscaestoque").value = ""; 
       }
     })
     .withFailureHandler(function(erro) {
@@ -921,6 +957,7 @@ function carregarTabelaEstoque() {
                             <td>${item.descricao}</td>
                             <td ${estiloAlerta}>${item.quantidade}</td>
                             <td>${item.tamanho}</td>
+                            <td>${item.ca}</td>
                         </tr>
                     `;
                 });
@@ -1712,8 +1749,6 @@ async function baixarPDFUniformes() {
 
 //FUNÇÃO DEVOLUÇÃO DE EPI
 
-let listaEPIsNoModal = []; 
-
 function buscarRegistrosParaDevolucao() {
     const elMatricula = document.getElementById('matricula-devolucao'); 
     const matricula = elMatricula.value.trim();
@@ -1728,12 +1763,25 @@ function buscarRegistrosParaDevolucao() {
         .withSuccessHandler(function(res) {
             esconderLoader();
 
-            if (res.erro) return mostrarNotificacao(res.erro, "error");
+            // Caso o servidor retorne que não há nada 
+            if (res.vazio) {
+                return mostrarNotificacao(res.mensagem, "warning"); 
+            }
 
-            document.getElementById('epi-dev-cabecalho').innerText = "Colaborador: " + res.nome;
+            // Caso ocorra um erro de processamento
+            if (res.erro) {
+                return mostrarNotificacao(res.erro, "error");
+            }
+            
+            // Sucesso: Restaura o nome do colaborador
+            const cabecalho = document.getElementById('epi-dev-cabecalho');
+            cabecalho.innerText = "Colaborador: " + (res.nome || "Não identificado");
+
+            // Limpeza e renderização
+            listaEPIsNoModal = []; 
             const container = document.getElementById('epi-dev-lista-render');
             container.innerHTML = "";
-            
+
             listaEPIsNoModal = res.itens; 
 
             res.itens.forEach((item, index) => {
@@ -1744,31 +1792,23 @@ function buscarRegistrosParaDevolucao() {
                 itemDiv.innerHTML = `
                   <div style="display:flex; flex-direction:column;">
                       <span class="item-nome-texto" style="font-weight:bold; color:#333;">${item.itemNome}</span>
-                      <small style="color:#666;">CA: ${item.ca || 'N/A'}</small>
+                      <small style="color:#666;">CA: ${item.ca || 'N/A'} | Retirada: ${item.dataRetirada}</small>
                   </div>
                   <div class="input-container-data">
-                    <input type="text" 
+                    <input type="date" 
                            id="epi-data-input-${index}" 
-                           class="flatpickr-epi-dev" 
-                           placeholder="Data de Devolução"
-                           style="width:130px; padding:6px; border:1px solid #ccc; border-radius:4px;">
+                           class="input-data-padrao" 
+                           style="width:150px; padding:6px; border:1px solid #ccc; border-radius:4px;">
                   </div>
                 `;
                 container.appendChild(itemDiv);
             });
 
             document.getElementById('modal-epi-devolucao').style.display = 'flex';
-
-            flatpickr(".flatpickr-epi-dev", {
-                dateFormat: "d/m/Y",
-                locale: "pt",
-                allowInput: true,
-                defaultDate: "today" 
-            });
         })
         .withFailureHandler(function(err) {
             esconderLoader();
-            mostrarNotificacao("Erro ao conectar com o servidor.", "error");
+            mostrarNotificacao("Erro de conexão com o servidor.", "error");
         })
         .roteadorSolicitacoes({ 
             qualFuncao: "buscarEPIsPendentes", 
@@ -1783,34 +1823,38 @@ function enviarLoteDevolucaoEPI() {
 
     listaEPIsNoModal.forEach((item, index) => {
         const input = document.getElementById(`epi-data-input-${index}`);
-        const dataSelecionada = input ? input.value : "";
+        const dataValor = input ? input.value : "";
         
-        if (dataSelecionada) {
+        if (dataValor) {
             dadosParaEnviar.push({
                 id: item.id,   
-                data: dataSelecionada
+                data: dataValor
             });
         }
     });
 
     if (dadosParaEnviar.length === 0) {
-        return mostrarNotificacao("Selecione ao menos uma data de devolução.", "warning");
+        return mostrarNotificacao("Selecione ao menos uma data.", "warning");
     }
 
-    exibirLoader("Salvando devoluções...");
+    exibirLoader("Salvando...");
 
     google.script.run
         .withSuccessHandler(function(res) {
             esconderLoader();
-            if (res.sucesso) {
+            if (res.sucesso || res === "Sucesso") { 
                 mostrarNotificacao("Devoluções registradas com sucesso!", "success");
                 fecharModalEPIDevolucao();
+                
+                // Limpa os campos para a próxima busca
                 document.getElementById('matricula-devolucao').value = "";
+                document.getElementById('epi-dev-lista-render').innerHTML = ""; 
+                listaEPIsNoModal = []; // Limpa a variável global de controle
             } else {
                 mostrarNotificacao(res.erro || "Erro ao salvar.", "error");
             }
         })
-        .withFailureHandler(function(err) {
+        .withFailureHandler(err => {
             esconderLoader();
             mostrarNotificacao("Erro de conexão.", "error");
         })

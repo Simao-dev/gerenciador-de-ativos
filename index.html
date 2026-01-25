@@ -153,7 +153,7 @@
           </div>
         </div>
         <div class="nome-tela">
-          <h2>Últimos itens</h2>
+          <h2>Ultimos itens</h2>
         </div>
         <div class="div-ultimos-itens">
           <table id="tabela-ultimos-itens" class="tabela-estoque">
@@ -318,7 +318,7 @@
                 id="nomeretirada"
                 class="adicionais"
                 type="text"
-                placeholder="Pedro"
+                placeholder="Nome Sobrenome"
                 />
           </div>
           <div class="item-input">
@@ -460,6 +460,7 @@
                 <th>Descrição</th>
                 <th>Quantidade</th>
                 <th>Tamanho</th>
+                <th>C.A</th>
               </tr>
             </thead>
             <tbody id="lista-estoque-body"></tbody>
@@ -676,7 +677,7 @@
           </div>
         </div>
         <div class="nome-tela">
-          <h2>Relatorio de EPI</h2>
+          <h2>Relatório de EPI</h2>
         </div>
         <div class="item-input">
           <label for="matricula-relatorio">Matrícula:</label>
@@ -843,19 +844,22 @@
 
       <!--MODAL DEVOLUÇÃO DE EPI-->
       <div id="modal-epi-devolucao" class="modal-overlay" style="display:none;">
-        <div class="modal-uniformes">
-          <div class="uniformes-nome">
+        <div class="modal-uniformes" style="display: flex; flex-direction: column; max-height: 85vh; width: 90%; max-width: 500px;">
+    
+          <div class="uniformes-nome" style="flex-shrink: 0;">
             <h3 id="epi-dev-cabecalho">Itens Pendentes (EPI)</h3>
           </div>
 
-          <div class="main-logo">
+          <div class="main-logo" style="flex-shrink: 0; padding: 10px 0;">
             <p>Selecione a data de devolução para os EPIs abaixo:</p>
           </div>
 
-          <div id="epi-dev-lista-render" class="lista-itens-container-modal">
+          <div class="div-devolucao-epi" style="flex-grow: 1; overflow-y: auto; border-top: 1px solid #eee; border-bottom: 1px solid #eee;">
+            <div id="epi-dev-lista-render" class="lista-itens-container-modal">
+              </div>
           </div>
 
-          <div class="modal-footer">
+          <div class="modal-footer" style="flex-shrink: 0; padding-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
             <button type="button" onclick="fecharModalEPIDevolucao()" class="btn-cancel">
                 Cancelar
             </button>
@@ -863,6 +867,7 @@
                 Confirmar Devoluções
             </button>
           </div>
+    
         </div>
       </div>
 
