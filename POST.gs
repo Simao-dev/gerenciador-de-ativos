@@ -90,7 +90,7 @@ function roteadorSolicitacoes(data) {
 
 function buscarMetricasEstoque() {
   try {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+    const ss = SpreadsheetApp.openById("");
     const timezone = ss.getSpreadsheetTimeZone();
     const hojeStr = Utilities.formatDate(new Date(), timezone, "dd/MM/yyyy");
 
@@ -175,7 +175,7 @@ function buscarMetricasEstoque() {
 
 function buscarEntregasHoje() {
   try {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+    const ss = SpreadsheetApp.openById("");
     const timezone = ss.getSpreadsheetTimeZone();
     const hojeStr = Utilities.formatDate(new Date(), timezone, "dd/MM/yyyy");
     
@@ -226,7 +226,7 @@ function buscarEntregasHoje() {
 //FUNÇÃO DE CADASTRO DE COLABORADORES //
 
 function salvarColaborador(data) {
-  const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+  const ss = SpreadsheetApp.openById("");
   const main = ss.getSheetByName("colaboradores");
 
   // Garante que a aba existe e tem cabeçalho
@@ -301,7 +301,7 @@ function salvarColaborador(data) {
 //FUNÇÃO BUSCA COLABORADOR  
 
 function buscarColaboradorPorMatricula(data) { 
-  const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+  const ss = SpreadsheetApp.openById("");
   const sheet = ss.getSheetByName("colaboradores");
   const dados = sheet.getDataRange().getValues();
   const linhas = dados.slice(1);
@@ -330,7 +330,7 @@ function buscarColaboradorPorMatricula(data) {
 //FUNÇÃO SALVAR ITEM 
 
 function salvaritem(data) {
-  const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+  const ss = SpreadsheetApp.openById("");
   const sheet = ss.getSheetByName("estoque"); 
 
   if (!sheet) return "ERRO: Aba 'estoque' não encontrada!";
@@ -399,7 +399,7 @@ function salvaritem(data) {
 }
 
 function buscarItemPorCodigo(data) {
-  const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+  const ss = SpreadsheetApp.openById("");
   const sheet = ss.getSheetByName("estoque");
   const dados = sheet.getDataRange().getValues();
   const linhas = dados.slice(1); 
@@ -433,7 +433,7 @@ function buscarItemPorCodigo(data) {
 //FUNÇÃO QUE BUSCA OS DADOS PARA EDIÇÃO DE ITENS 
 function buscarItemParaEdicao(data) {
   try {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+    const ss = SpreadsheetApp.openById("");
     const sheet = ss.getSheetByName("estoque");
     
     const dados = sheet.getDataRange().getValues();
@@ -462,7 +462,7 @@ function buscarItemParaEdicao(data) {
 //FUNÇÃO QUE SUBTRAI ITENS DO ESTOQUE E SALVA NA ABA MOVIMENTACOES
 
 function registrarRetiradaEstoque(itens) {
-  const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+  const ss = SpreadsheetApp.openById("");
   const sheetEstoque = ss.getSheetByName("Estoque"); 
   const dataEstoque = sheetEstoque.getDataRange().getValues();
   const dataHoje = Utilities.formatDate(new Date(), ss.getSpreadsheetTimeZone(), "dd/MM/yyyy");
@@ -525,7 +525,7 @@ function registrarRetiradaEstoque(itens) {
 //BUSCA ESTOQUE PARA ALIMENTAR TABELA 
 
 function buscarDadosEstoque() {
-  const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+  const ss = SpreadsheetApp.openById("");
   const sheet = ss.getSheetByName("estoque");
   
   // Pega todos os dados (pulando o cabeçalho)
@@ -551,7 +551,7 @@ function buscarDadosEstoque() {
 
 function salvarMovimentacaoEPI(data) {
   try {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+    const ss = SpreadsheetApp.openById("");
     const abaMov = ss.getSheetByName("epimovimentacoes");
     
     // LÓGICA PARA ID SEQUENCIAL 
@@ -594,7 +594,7 @@ function salvarMovimentacaoEPI(data) {
 
 function buscarCompletoDevolucao(matriculaSolicitada) {
   try {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8"); 
+    const ss = SpreadsheetApp.openById(""); 
     const abaMov = ss.getSheetByName("epimovimentacoes");
 
     if (!abaMov) return { erro: "Aba 'epimovimentacoes' não encontrada." };
@@ -630,7 +630,7 @@ function buscarCompletoDevolucao(matriculaSolicitada) {
 
 function atualizarDevolucaoEPI(data) {
   try {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+    const ss = SpreadsheetApp.openById("");
     const abaMov = ss.getSheetByName("epimovimentacoes");
     
     const valores = abaMov.getDataRange().getValues();
@@ -662,7 +662,7 @@ function atualizarDevolucaoEPI(data) {
 
 function buscarPendentesDevolucao() {
   try {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+    const ss = SpreadsheetApp.openById("");
     const aba = ss.getSheetByName("epimovimentacoes");
     const dados = aba.getDataRange().getValues();
     
@@ -691,7 +691,7 @@ function buscarPendentesDevolucao() {
 
 function buscarItensPendentesPorMatricula(data) {
   try {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+    const ss = SpreadsheetApp.openById("");
     const abaMov = ss.getSheetByName("movimentacoes");
     const valores = abaMov.getDataRange().getValues();
     
@@ -731,7 +731,7 @@ function buscarItensPendentesPorMatricula(data) {
 
 function salvarDatasDevolucaoFardamento(listaDevolucao) {
   try {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+    const ss = SpreadsheetApp.openById("");
     const abaMov = ss.getSheetByName("movimentacoes");
 
     listaDevolucao.forEach(dev => {
@@ -757,7 +757,7 @@ function salvarDatasDevolucaoFardamento(listaDevolucao) {
 
 function buscarMovimentacoesUniformes(data) {
   try {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+    const ss = SpreadsheetApp.openById("");
     const aba = ss.getSheetByName("movimentacoes");
     const valores = aba.getDataRange().getValues();
     const matriculaBusca = String(data.matricula).trim();
@@ -803,7 +803,7 @@ function buscarMovimentacoesUniformes(data) {
 // Busca apenas registros da matrícula informada que ainda não foram devolvidos
 function buscarParaDevolucao(data) {
   try {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+    const ss = SpreadsheetApp.openById("");
     const sheet = ss.getSheetByName("registroepi");
     if (!sheet) return { erro: "Aba 'registroepi' não encontrada" };
 
@@ -843,7 +843,7 @@ function buscarParaDevolucao(data) {
 // Localiza o ID na aba e preenche as colunas J e K
 function registrarDevolucao(data) {
   try {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+    const ss = SpreadsheetApp.openById("");
     const aba = ss.getSheetByName("registroepi");
     const colunaID = aba.getRange("A:A").getValues(); // Busca IDs na Coluna A
     
@@ -883,7 +883,7 @@ function registrarDevolucao(data) {
 // FUNÇÃO QUE BUSCA DOS ITENS PARA ALIMENTAR ABA DE HIGIENIZAÇÃO 
 
 function buscarItemPorCodigoEpi(data) {
-  const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+  const ss = SpreadsheetApp.openById("");
   const sheet = ss.getSheetByName("estoque");
   const dados = sheet.getDataRange().getValues();
   
@@ -905,7 +905,7 @@ function buscarItemPorCodigoEpi(data) {
 //BUSCA TODOS OS EPIS PEDENTES DE DEVOLUÇÃO 
 
 function buscarTodosEpisPendentes(data) {
-  const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+  const ss = SpreadsheetApp.openById("");
   const abaMov = ss.getSheetByName("epimovimentacoes");
   const valores = abaMov.getDataRange().getValues();
   
@@ -934,7 +934,7 @@ function buscarTodosEpisPendentes(data) {
 }
 
 function processarDevolucaoLote(data) {
-  const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+  const ss = SpreadsheetApp.openById("");
   const abaMov = ss.getSheetByName("epimovimentacoes");
   
   data.itens.forEach(item => {
@@ -949,7 +949,7 @@ function processarDevolucaoLote(data) {
 
 
 function buscarDadosFichaCompleta(data) {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+    const ss = SpreadsheetApp.openById("");
     const abaMov = ss.getSheetByName("epimovimentacoes");
     const valores = abaMov.getDataRange().getValues();
     
@@ -987,7 +987,7 @@ function buscarDadosFichaCompleta(data) {
 
 function buscarDadosRelatorioEpi(data) {
   try {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+    const ss = SpreadsheetApp.openById("");
     const sheetEpi = ss.getSheetByName("registroepi");
     const sheetColab = ss.getSheetByName("colaboradores");
     
@@ -1046,7 +1046,7 @@ function buscarDadosRelatorioEpi(data) {
 
 function buscarEPIsPendentes(data) {
   try {
-    const ss = SpreadsheetApp.openById("1wGKWaGj3YKd63Kl6IMyFwajSs5Ce0UqvZkPUlduKMd8");
+    const ss = SpreadsheetApp.openById("");
     const aba = ss.getSheetByName("registroepi");
     const dados = aba.getDataRange().getValues();
     const matriculaProcurada = data.matricula.toString().trim();
